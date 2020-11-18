@@ -1,0 +1,103 @@
+
+import tw.jizah.popocast.buildsrc.Libs
+
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+kapt {
+    correctErrorTypes = true
+    useBuildCache = true
+}
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        applicationId "tw.jizah.popocast"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.incremental"     : "true",
+                        "room.expandProjection": "true"
+                ]
+            }
+        }
+    }
+
+    packagingOptions {
+        // The Rome library JARs embed some internal utils libraries in nested JARs.
+        // We don't need them so we exclude them in the final package.
+        exclude "/*.jar"
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        useIR = true
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion '1.4.10'
+    }
+}
+
+dependencies {
+    implementation Libs.Kotlin.stdlib
+    implementation Libs.Coroutines.android
+
+    implementation Libs.AndroidX.coreKtx
+    implementation Libs.AndroidX.palette
+    implementation Libs.AndroidX.appcompat
+    implementation Libs.material
+
+    implementation Libs.AndroidX.Lifecycle.viewmodel
+
+    implementation Libs.AndroidX.Compose.foundation
+    implementation Libs.AndroidX.Compose.material
+    implementation Libs.AndroidX.Compose.materialIconsExtended
+    implementation Libs.AndroidX.Compose.tooling
+    implementation Libs.AndroidX.Compose.ui
+
+    implementation Libs.Accompanist.coil
+
+    implementation Libs.Accompanist.insets
+
+    implementation Libs.OkHttp.okhttp
+    implementation Libs.OkHttp.logging
+
+    implementation Libs.Rome.rome
+    implementation Libs.Rome.modules
+
+    implementation Libs.AndroidX.Room.runtime
+    implementation Libs.AndroidX.Room.ktx
+    kapt Libs.AndroidX.Room.compiler
+
+    coreLibraryDesugaring Libs.jdkDesugar
+}
