@@ -3,6 +3,7 @@ package tw.jizah.popocast.ui.player
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,7 +16,6 @@ import androidx.compose.ui.res.loadImageResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
-import tw.jizah.popocast.ui.theme.PoPoCastTypography
 import tw.jizah.popocast.ui.theme.playerControllerBgColor
 import tw.jizah.popocast.ui.theme.playerControllerOwnerTextColor
 import tw.jizah.popocast.widget.EllipsisText
@@ -38,12 +38,12 @@ fun PlayerController() {
                 Column(modifier = Modifier.align(Alignment.CenterStart)) {
                     EllipsisText(
                         text = "podcast title podcast title podcast title podcast title",
-                        style = PoPoCastTypography.subtitle1,
+                        style = MaterialTheme.typography.subtitle1,
                         color = Color.White,
                     )
                     EllipsisText(
                         text = "podcast owner",
-                        style = PoPoCastTypography.subtitle2,
+                        style = MaterialTheme.typography.subtitle2,
                         color = playerControllerOwnerTextColor,
                     )
                 }
