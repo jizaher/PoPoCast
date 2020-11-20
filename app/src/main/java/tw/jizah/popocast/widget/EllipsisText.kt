@@ -5,7 +5,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -34,7 +33,7 @@ fun EllipsisText(
     style: TextStyle = AmbientTextStyle.current
 ) {
     Text(
-        text = AnnotatedString(text),
+        text = text,
         modifier = modifier,
         color = color,
         fontSize = fontSize,
@@ -48,7 +47,6 @@ fun EllipsisText(
         overflow = TextOverflow.Ellipsis,
         softWrap = softWrap,
         maxLines = 1,
-        inlineContent = emptyMap(),
         onTextLayout = onTextLayout,
         style = style
     )

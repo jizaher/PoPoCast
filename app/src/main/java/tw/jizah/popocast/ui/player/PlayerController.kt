@@ -14,15 +14,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.loadImageResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
-import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.ui.theme.PoPoCastTypography
 import tw.jizah.popocast.ui.theme.playerControllerBgColor
 import tw.jizah.popocast.ui.theme.playerControllerOwnerTextColor
 import tw.jizah.popocast.widget.EllipsisText
 
-
-@Preview
 @Composable
 fun PlayerController() {
     val viewModel: PlayerViewModel = viewModel(modelClass = PlayerViewModel::class.java)
@@ -50,23 +47,20 @@ fun PlayerController() {
                         color = playerControllerOwnerTextColor,
                     )
                 }
-
             }
             Box(
                 modifier = Modifier.weight(2F).fillMaxSize(),
             ) {
                 IconButton(
-                    onClick = {
-                        viewModel.togglePlayOrPause()
-                    },
+                    onClick = { viewModel.togglePlayOrPause() },
                     modifier = Modifier.align(Alignment.Center),
                 ) {
-                    val imageRes = if (isPlaying) {
-                        loadImageResource(id = android.R.drawable.ic_media_pause)
+                    val id = if (isPlaying) {
+                        android.R.drawable.ic_media_pause
                     } else {
-                        loadImageResource(id = android.R.drawable.ic_media_play)
+                        android.R.drawable.ic_media_play
                     }
-                    imageRes.resource.resource?.let {
+                    loadImageResource(id).resource.resource?.let {
                         Image(asset = it)
                     }
                 }
