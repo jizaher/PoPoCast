@@ -1,4 +1,4 @@
-package tw.jizah.popocast.ui
+package tw.jizah.popocast.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
