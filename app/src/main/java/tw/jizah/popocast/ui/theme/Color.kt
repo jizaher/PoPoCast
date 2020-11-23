@@ -23,10 +23,6 @@ val gray800 = Color(0xFF424242)
 val gray900 = Color(0xFF212121)
 
 
-val playerControllerBgColor = gray900
-val playerControllerOwnerTextColor = gray500
-
-
 @Composable
 fun Colors.compositedOnSurface(alpha: Float): Color {
     return onSurface.copy(alpha = alpha).compositeOver(surface)
