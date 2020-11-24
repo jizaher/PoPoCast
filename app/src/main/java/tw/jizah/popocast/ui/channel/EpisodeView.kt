@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
+import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens.episodeListCoverSize
 import tw.jizah.popocast.ui.theme.Dimens.m1
@@ -32,18 +32,10 @@ import tw.jizah.popocast.widget.EllipsisText
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-data class ItemInfo(val channelName: String, val itemList: List<Item>) {
-    data class Item(
-        val imageUrl: String,
-        val itemName: String,
-        val itemInfo: String,
-        val releaseTime: Long
-    )
-}
-
 @Composable
-fun EpisodeItemList(itemInfo: ItemInfo, modifier: Modifier = Modifier.fillMaxWidth()) {
-    val channelName = itemInfo.channelName
+fun EpisodeItemList(channelName: String,
+                    episodeItemList: List<EpisodeItem>,
+                    modifier: Modifier = Modifier.fillMaxWidth()) {
     // TODO DEBUG [Amy] logic for player info
     val playerInfo = "昨天"
 
@@ -51,10 +43,10 @@ fun EpisodeItemList(itemInfo: ItemInfo, modifier: Modifier = Modifier.fillMaxWid
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (headerId, sortBtnId) = createRefs()
 
-            EllipsisText(text = stringResource(id = R.string.all_chapter),
+            EllipsisText(text = stringResource(id = R.string.all_episodes),
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = Colors.white,
                 modifier = Modifier.padding(top = m2, bottom = m2).constrainAs(headerId) {
                     start.linkTo(parent.start)
                     end.linkTo(sortBtnId.start)
@@ -64,7 +56,7 @@ fun EpisodeItemList(itemInfo: ItemInfo, modifier: Modifier = Modifier.fillMaxWid
 
             Button(onClick = { /* todo */ },
                 colors = ButtonConstants.defaultButtonColors(
-                    backgroundColor = Color.DarkGray
+                    backgroundColor = Colors.darkGray
                 ),
                 modifier = Modifier.constrainAs(sortBtnId) {
                     end.linkTo(parent.end)
@@ -72,7 +64,7 @@ fun EpisodeItemList(itemInfo: ItemInfo, modifier: Modifier = Modifier.fillMaxWid
                     bottom.linkTo(headerId.bottom)
                 }
             ) {
-                Text(text = stringResource(id = R.string.sort), color = Color.LightGray)
+                Text(text = stringResource(id = R.string.sort), color = Colors.lightGray)
             }
         }
 
@@ -80,11 +72,11 @@ fun EpisodeItemList(itemInfo: ItemInfo, modifier: Modifier = Modifier.fillMaxWid
 
         LazyColumnFor(
             modifier = Modifier.fillMaxWidth(),
-            items = itemInfo.itemList,
+            items = episodeItemList,
         ) { item ->
             /* todo : logic for progress and play state */
             Column {
-                EpisodeItem(
+                EpisodeItemView(
                     imageUrl = item.imageUrl,
                     title = item.itemName,
                     subTitle = channelName,
@@ -100,7 +92,7 @@ fun EpisodeItemList(itemInfo: ItemInfo, modifier: Modifier = Modifier.fillMaxWid
 }
 
 @Composable
-fun EpisodeItem(
+fun EpisodeItemView(
     imageUrl: String,
     title: String,
     subTitle: String,
@@ -113,7 +105,7 @@ fun EpisodeItem(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(m2),
-        backgroundColor = Color.DarkGray
+        backgroundColor = Colors.darkGray
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (coverId, titleId, subtitleId, moreIconId,
@@ -135,7 +127,7 @@ fun EpisodeItem(
                 maxLines = 2,
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = Colors.white,
                 modifier = Modifier.constrainAs(titleId) {
                     start.linkTo(coverId.end, m4)
                     end.linkTo(moreIconId.start, m1)
@@ -146,7 +138,7 @@ fun EpisodeItem(
 
             EllipsisText(text = subTitle,
                 style = MaterialTheme.typography.subtitle2,
-                color = Color.LightGray,
+                color = Colors.lightGray,
                 modifier = Modifier.constrainAs(subtitleId) {
                     start.linkTo(titleId.start)
                     end.linkTo(titleId.end)
@@ -164,7 +156,7 @@ fun EpisodeItem(
                 icon = {
                     Icon(
                         asset = Icons.Default.MoreVert,
-                        tint = Color.LightGray
+                        tint = Colors.lightGray
                     )
                 },
             )
@@ -172,7 +164,7 @@ fun EpisodeItem(
             EllipsisText(text = itemInfo,
                 maxLines = 2,
                 style = MaterialTheme.typography.subtitle2,
-                color = Color.LightGray,
+                color = Colors.lightGray,
                 modifier = Modifier.constrainAs(channelInfoId) {
                     start.linkTo(coverId.start)
                     top.linkTo(coverId.bottom, m2)
@@ -186,7 +178,7 @@ fun EpisodeItem(
                 modifier = Modifier
                     .preferredSize(m9)
                     .clip(CircleShape)
-                    .background(Color.White)
+                    .background(Colors.white)
                     .constrainAs(playerIconId) {
                         start.linkTo(coverId.start)
                         top.linkTo(channelInfoId.bottom, m1)
@@ -206,7 +198,7 @@ fun EpisodeItem(
 
             EllipsisText(text = playerInfo,
                 style = MaterialTheme.typography.overline,
-                color = Color.LightGray,
+                color = Colors.lightGray,
                 modifier = Modifier.constrainAs(itemInfoId) {
                     start.linkTo(playerIconId.end, m2)
                     end.linkTo(moreIconId.end, m1)
@@ -235,28 +227,24 @@ fun EpisodeItem(
 @Preview
 @Composable
 fun previewItemList() {
-    val itemInfo = ItemInfo(
-        channelName = "百靈果NEWS",
-        itemList = (0..10).map { index ->
-            ItemInfo.Item(
-                imageUrl = "https://picsum.photos/300/300",
-                itemName = "This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index",
-                itemInfo = "This is item info This is item info This is item info This is item info This is item info This is item info",
-                releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
-                    (index + 1).toLong(),
-                    TimeUnit.DAYS
-                )
+    EpisodeItemList(channelName = "百靈果NEWS",
+        episodeItemList = (0..10).map { index ->
+        EpisodeItem(
+            imageUrl = "https://picsum.photos/300/300",
+            itemName = "This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index",
+            itemInfo = "This is item info This is item info This is item info This is item info This is item info This is item info",
+            releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
+                (index + 1).toLong(),
+                TimeUnit.DAYS
             )
-        }
-    )
-
-    EpisodeItemList(itemInfo)
+        )
+    })
 }
 
 @Preview
 @Composable
 fun previewItem() {
-    EpisodeItem(
+    EpisodeItemView(
         imageUrl = "https://picsum.photos/300/300",
         title = "This is channel Title2 This is channel Title2 This is channel Title2 This is channel Title2",
         subTitle = "This is channel subTitle",

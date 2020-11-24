@@ -42,6 +42,9 @@ object Colors {
     val yellow800 = Color(0xFFF29F05)
     val red300 = Color(0xFFEA6D7E)
     val white = Color.White
+    val black = Color.Black
+    val lightGray = Color.LightGray
+    val darkGray = Color.DarkGray
 
     val playerControllerBg = gray900
     val playerControllerTitleText = Color.White

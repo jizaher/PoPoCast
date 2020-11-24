@@ -12,14 +12,17 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
+import tw.jizah.popocast.model.CategoryItem
+import tw.jizah.popocast.model.ChannelItem
+import tw.jizah.popocast.model.EpisodeItem
+import tw.jizah.popocast.ui.theme.Colors
+import tw.jizah.popocast.ui.theme.Dimens.buttonBorder
 import tw.jizah.popocast.ui.theme.Dimens.channelCoverSize
 import tw.jizah.popocast.ui.theme.Dimens.m2
 import tw.jizah.popocast.ui.theme.Dimens.m3
@@ -28,23 +31,10 @@ import tw.jizah.popocast.widget.EllipsisText
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-data class ChannelInfo(
-    val imageUrl: String,
-    val title: String,
-    val subtitle: String,
-    val introduction: String,
-    val isFollowed: Boolean,
-    val isExpanded: Boolean,
-    val itemInfo: ItemInfo,
-    val categoryList: List<Category>
-)
-
-data class Category(val name: String, val url: String)
-
 @Composable
-fun ChannelPage(channelInfo: ChannelInfo) {
+fun ChannelPage(channelItem: ChannelItem) {
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+    Column(modifier = Modifier.fillMaxSize().background(Colors.black)) {
         ConstraintLayout(modifier = Modifier.padding(horizontal = m4).fillMaxWidth()) {
             val (actionBack, coverId, titleId, subtitleId,
                 followBtnId, moreBtnId, introductionId,
@@ -57,11 +47,11 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                 }) {
                 Icon(
                     asset = Icons.Filled.ArrowBack,
-                    tint = Color.White
+                    tint = Colors.white
                 )
             }
 
-            CoilImage(data = channelInfo.imageUrl,
+            CoilImage(data = channelItem.imageUrl,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.preferredSize(channelCoverSize)
                     .clip(MaterialTheme.shapes.medium)
@@ -70,9 +60,9 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                         top.linkTo(actionBack.bottom, m3)
                     })
 
-            EllipsisText(text = channelInfo.title,
+            EllipsisText(text = channelItem.title,
                 style = MaterialTheme.typography.h4,
-                color = Color.White,
+                color = Colors.white,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(titleId) {
                     start.linkTo(coverId.end, m4)
@@ -83,8 +73,8 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                     height = Dimension.wrapContent
                 }
             )
-            EllipsisText(text = channelInfo.subtitle,
-                color = Color.White,
+            EllipsisText(text = channelItem.subtitle,
+                color = Colors.white,
                 modifier = Modifier.constrainAs(subtitleId) {
                     start.linkTo(titleId.start)
                     end.linkTo(titleId.end)
@@ -95,26 +85,26 @@ fun ChannelPage(channelInfo: ChannelInfo) {
 
             OutlinedButton(onClick = { /* todo */ },
                 colors = ButtonConstants.defaultButtonColors(
-                    backgroundColor = Color.Black
+                    backgroundColor = Colors.black
                 ),
-                border = BorderStroke(1.dp, Color.White),
+                border = BorderStroke(buttonBorder, Colors.white),
                 modifier = Modifier.constrainAs(followBtnId) {
                     top.linkTo(coverId.bottom, m3)
                     start.linkTo(coverId.start)
                 }) {
 
-                val textResId = if (channelInfo.isFollowed) {
+                val textResId = if (channelItem.isFollowed) {
                     R.string.followed
                 } else {
                     R.string.not_yet_followed
                 }
                 Text(
-                    color = Color.White,
+                    color = Colors.white,
                     text = stringResource(id = textResId)
                 )
             }
 
-            IconButton(onClick = {},
+            IconButton(onClick = { /* todo */ },
                 modifier = Modifier.constrainAs(moreBtnId) {
                     top.linkTo(followBtnId.top)
                     bottom.linkTo(followBtnId.bottom)
@@ -122,14 +112,14 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                 }) {
                 Icon(
                     asset = Icons.Default.MoreVert,
-                    tint = Color.LightGray
+                    tint = Colors.lightGray
                 )
             }
 
-            val maxLines = if (channelInfo.isExpanded) Int.MAX_VALUE else 2
+            val maxLines = if (channelItem.isExpanded) Int.MAX_VALUE else 2
             EllipsisText(
-                text = channelInfo.introduction,
-                color = Color.LightGray,
+                text = channelItem.introduction,
+                color = Colors.lightGray,
                 maxLines = maxLines,
                 modifier = Modifier.constrainAs(introductionId) {
                     start.linkTo(coverId.start)
@@ -138,9 +128,9 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                     width = Dimension.fillToConstraints
                 })
 
-            val stringId = if (channelInfo.isExpanded) R.string.see_less else R.string.see_more
+            val stringId = if (channelItem.isExpanded) R.string.see_less else R.string.see_more
             Text(text = stringResource(id = stringId),
-                color = Color.White,
+                color = Colors.white,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(seeMoreId) {
                     end.linkTo(titleId.end)
@@ -150,7 +140,7 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                     width = Dimension.wrapContent
                 })
 
-            LazyRowFor(items = channelInfo.categoryList,
+            LazyRowFor(items = channelItem.categoryList,
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(categoryId) {
@@ -162,12 +152,11 @@ fun ChannelPage(channelInfo: ChannelInfo) {
                 OutlinedButton(
                     shape = RoundedCornerShape(m4),
                     onClick = { /* todo */ },
-                    colors = ButtonConstants.defaultButtonColors(backgroundColor = Color.Black),
-                    border = BorderStroke(1.dp, Color.White),
+                    colors = ButtonConstants.defaultButtonColors(backgroundColor = Colors.black),
+                    border = BorderStroke(buttonBorder, Colors.white),
                 ) {
-
                     Text(
-                        color = Color.White,
+                        color = Colors.white,
                         text = item.name
                     )
                 }
@@ -177,7 +166,8 @@ fun ChannelPage(channelInfo: ChannelInfo) {
         }
 
         EpisodeItemList(
-            itemInfo = channelInfo.itemInfo,
+            channelName = channelItem.title,
+            episodeItemList = channelItem.episodeList,
             modifier = Modifier.padding(start = m4, end = m4).fillMaxWidth()
         )
     }
@@ -187,18 +177,16 @@ fun ChannelPage(channelInfo: ChannelInfo) {
 @Composable
 fun ChannelPagePreview() {
     ChannelPage(
-        ChannelInfo(
+        ChannelItem(
             imageUrl = "https://picsum.photos/300/300",
             title = "百靈果NEWS",
             subtitle = "百靈果NEWS",
             introduction = "在這裏，Kylie跟Ken，用雙語的對話包裝知識，用輕鬆的口吻胡說八道。我們閒聊也談正經事，讓生硬的國際大事變得鬆軟好入口；歡迎你加入這外表看似嘴砲，內容卻異於常人的有料聊天。",
             isFollowed = true,
             isExpanded = true,
-            categoryList = listOf(Category("喜劇", ""), Category("知識", "")),
-            itemInfo = ItemInfo(
-                channelName = "百靈果NEWS",
-                itemList = (0..10).map { index ->
-                    ItemInfo.Item(
+            categoryList = listOf(CategoryItem("喜劇", ""), CategoryItem("知識", "")),
+            episodeList = (0..10).map { index ->
+                    EpisodeItem(
                         imageUrl = "https://picsum.photos/300/300",
                         itemName = "This is item title $index",
                         itemInfo = "This is item info",
@@ -207,7 +195,7 @@ fun ChannelPagePreview() {
                             TimeUnit.DAYS
                         )
                     )
-                })
+                }
         )
     )
 }
