@@ -16,4 +16,7 @@ object Dimens {
 
     val playerControllerSize = 80.dp
     val playerControllerTextPadding = m1
+
+    val episodeListCoverSize = 80.dp
+    val channelCoverSize = 120.dp
 }

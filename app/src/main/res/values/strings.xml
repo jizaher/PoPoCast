@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">PoPoCast</string>
+    <string name="all_chapter">所有章節</string>
+    <string name="sort">排序</string>
+    <string name="see_less">顯示更少</string>
+    <string name="see_more">查看更多</string>
+    <string name="followed">正在關注</string>
+    <string name="not_yet_followed">尚未關注</string>
 </resources>

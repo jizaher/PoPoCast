@@ -29,6 +29,7 @@ fun EllipsisText(
     textAlign: TextAlign? = null,
     lineHeight: TextUnit = TextUnit.Inherit,
     softWrap: Boolean = true,
+    maxLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = AmbientTextStyle.current
 ) {
@@ -46,7 +47,7 @@ fun EllipsisText(
         lineHeight = lineHeight,
         overflow = TextOverflow.Ellipsis,
         softWrap = softWrap,
-        maxLines = 1,
+        maxLines = maxLines,
         onTextLayout = onTextLayout,
         style = style
     )
