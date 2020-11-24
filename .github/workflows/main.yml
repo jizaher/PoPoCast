@@ -7,12 +7,11 @@ on:
   issue_comment:
     types: created
   issues:
-    types: [opened, edited, pinned, closed, reopened, assigned, labeled]
+    types: [opened, pinned, closed, reopened, assigned]
   pull_request:
-    types: [opened, closed, edited, ready_for_review, review_requested, reopened]
+    types: [opened, closed, review_requested, reopened]
   pull_request_review_comment:
     types: created
-  push:
 
 jobs:
   build:
