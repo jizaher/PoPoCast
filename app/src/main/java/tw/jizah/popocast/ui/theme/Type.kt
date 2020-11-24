@@ -1,4 +1,4 @@
-package tw.jizah.popocast.ui
+package tw.jizah.popocast.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

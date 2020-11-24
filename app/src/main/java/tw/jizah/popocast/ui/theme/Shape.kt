@@ -1,4 +1,4 @@
-package tw.jizah.popocast.ui
+package tw.jizah.popocast.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

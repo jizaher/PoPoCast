@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package tw.jizah.popocast.ui
+package tw.jizah.popocast.ui.theme
 
 import androidx.compose.ui.unit.dp
 
