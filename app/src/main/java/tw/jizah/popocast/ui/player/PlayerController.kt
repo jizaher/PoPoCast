@@ -1,23 +1,20 @@
 package tw.jizah.popocast.ui.player
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
-import tw.jizah.popocast.ui.theme.Drawables
 import tw.jizah.popocast.widget.EllipsisText
 
 @Composable
@@ -67,8 +64,8 @@ fun PlayerController() {
                         onClick = { viewModel.togglePlayOrPause() },
                         modifier = Modifier.align(Alignment.Center),
                     ) {
-                        val id = if (isPlaying) Drawables.iconPause else Drawables.iconPlay
-                        Image(asset = imageResource(id))
+                        val icon = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow
+                        Icon(asset = icon, tint = Colors.white)
                     }
                 }
             }
