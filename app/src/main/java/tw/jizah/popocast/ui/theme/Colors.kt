@@ -44,4 +44,5 @@ object Colors {
     val white = Color.White
     val black = Color.Black
     val yellow = Color.Yellow
+    val greenA700 = Color(0xFF1DB954)
 }
