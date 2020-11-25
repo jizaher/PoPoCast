@@ -15,5 +15,5 @@ object Dimens {
     val m10 = 40.dp
 
     val playerControllerSize = 80.dp
-    val playerControllerTextPadding = m1
+    val searchItemImageSize = 60.dp
 }

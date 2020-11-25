@@ -16,16 +16,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.SearchItem
 import tw.jizah.popocast.ui.theme.Colors.black
-import tw.jizah.popocast.ui.theme.Colors.darkGrey
-import tw.jizah.popocast.ui.theme.Colors.grey
+import tw.jizah.popocast.ui.theme.Colors.gray600
+import tw.jizah.popocast.ui.theme.Colors.gray800
 import tw.jizah.popocast.ui.theme.Colors.white
 import tw.jizah.popocast.ui.theme.Dimens
+import tw.jizah.popocast.ui.theme.Dimens.searchItemImageSize
 import tw.jizah.popocast.widget.EllipsisText
 
 @Composable
@@ -65,7 +65,7 @@ fun SearchBar() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = darkGrey,
+                    color = gray800,
                     shape = RoundedCornerShape(Dimens.m1)
                 ).padding(Dimens.m2),
             style = MaterialTheme.typography.subtitle1
@@ -110,7 +110,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
                     end.linkTo(title.start)
                     start.linkTo(parent.start)
                 }
-                .preferredSize(60.dp)
+                .preferredSize(searchItemImageSize)
                 .clip(shape = RoundedCornerShape(Dimens.m1)),
             error = {
                 Image(asset = imageResource(id = R.mipmap.ic_launcher))
@@ -131,7 +131,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
         )
         EllipsisText(
             text = item.subtitle,
-            color = grey,
+            color = gray600,
             style = MaterialTheme.typography.subtitle2,
             modifier = Modifier
                 .constrainAs(subtitle) {
@@ -173,7 +173,7 @@ fun ClearRecentSearches(onClick: () -> Unit) {
     ) {
         Text(
             text = stringResource(id = R.string.clear_recent_searches),
-            color = grey,
+            color = gray600,
             style = MaterialTheme.typography.subtitle1
         )
     }
