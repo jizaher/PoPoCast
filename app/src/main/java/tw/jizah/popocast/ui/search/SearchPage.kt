@@ -20,12 +20,8 @@ import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.SearchItem
-import tw.jizah.popocast.ui.theme.Colors.black
-import tw.jizah.popocast.ui.theme.Colors.gray600
-import tw.jizah.popocast.ui.theme.Colors.gray800
-import tw.jizah.popocast.ui.theme.Colors.white
+import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
-import tw.jizah.popocast.ui.theme.Dimens.searchItemImageSize
 import tw.jizah.popocast.widget.EllipsisText
 
 @Composable
@@ -36,7 +32,7 @@ fun SearchPagePreview() {
 
 @Composable
 fun SearchPage() {
-    Surface(color = black, modifier = Modifier.fillMaxSize()) {
+    Surface(color = Colors.black, modifier = Modifier.fillMaxSize()) {
         SearchContent()
     }
 }
@@ -57,17 +53,17 @@ fun SearchContent() {
 
 @Composable
 fun SearchBar() {
-    Row(modifier = Modifier.fillMaxWidth().padding(Dimens.m2)) {
+    Row(modifier = Modifier.fillMaxWidth().padding(Dimens.m3)) {
         Text(
             text = stringResource(id = R.string.search),
             textAlign = TextAlign.Center,
-            color = white,
+            color = Colors.white,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = gray800,
+                    color = Colors.gray800,
                     shape = RoundedCornerShape(Dimens.m1)
-                ).padding(Dimens.m2),
+                ).padding(Dimens.m3),
             style = MaterialTheme.typography.subtitle1
         )
     }
@@ -75,10 +71,10 @@ fun SearchBar() {
 
 @Composable
 fun RecentSearchTitle() {
-    Row(modifier = Modifier.fillMaxWidth().padding(Dimens.m2)) {
+    Row(modifier = Modifier.fillMaxWidth().padding(Dimens.m3)) {
         Text(
             text = stringResource(id = R.string.recent_searches),
-            color = white,
+            color = Colors.white,
             style = MaterialTheme.typography.h6
         )
     }
@@ -96,7 +92,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Dimens.m2)
+            .padding(Dimens.m3)
             .clickable(onClick = { onClick(item) })
     ) {
         val (cover, title, subtitle, close) = createRefs()
@@ -110,7 +106,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
                     end.linkTo(title.start)
                     start.linkTo(parent.start)
                 }
-                .preferredSize(searchItemImageSize)
+                .preferredSize(Dimens.searchItemImageSize)
                 .clip(shape = RoundedCornerShape(Dimens.m1)),
             error = {
                 Image(asset = imageResource(id = R.mipmap.ic_launcher))
@@ -118,7 +114,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
         )
         EllipsisText(
             text = item.title,
-            color = white,
+            color = Colors.white,
             style = MaterialTheme.typography.subtitle1,
             modifier = Modifier
                 .constrainAs(title) {
@@ -131,7 +127,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
         )
         EllipsisText(
             text = item.subtitle,
-            color = gray600,
+            color = Colors.gray600,
             style = MaterialTheme.typography.subtitle2,
             modifier = Modifier
                 .constrainAs(subtitle) {
@@ -152,12 +148,12 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(title.end)
-                    end.linkTo(parent.end, Dimens.m2)
+                    end.linkTo(parent.end, Dimens.m3)
                 }
         ) {
             Icon(
                 asset = Icons.Filled.Close,
-                tint = white
+                tint = Colors.white
             )
         }
     }
@@ -168,12 +164,12 @@ fun ClearRecentSearches(onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Dimens.m2)
+            .padding(Dimens.m3)
             .clickable(onClick = onClick)
     ) {
         Text(
             text = stringResource(id = R.string.clear_recent_searches),
-            color = gray600,
+            color = Colors.gray600,
             style = MaterialTheme.typography.subtitle1
         )
     }
