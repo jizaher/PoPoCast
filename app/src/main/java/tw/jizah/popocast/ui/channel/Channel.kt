@@ -22,20 +22,15 @@ import tw.jizah.popocast.model.CategoryItem
 import tw.jizah.popocast.model.ChannelItem
 import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.theme.Colors
-import tw.jizah.popocast.ui.theme.Dimens.buttonBorder
-import tw.jizah.popocast.ui.theme.Dimens.channelCoverSize
-import tw.jizah.popocast.ui.theme.Dimens.m2
-import tw.jizah.popocast.ui.theme.Dimens.m3
-import tw.jizah.popocast.ui.theme.Dimens.m4
+import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.widget.EllipsisText
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Composable
 fun ChannelPage(channelItem: ChannelItem) {
-
     Column(modifier = Modifier.fillMaxSize().background(Colors.black)) {
-        ConstraintLayout(modifier = Modifier.padding(horizontal = m4).fillMaxWidth()) {
+        ConstraintLayout(modifier = Modifier.padding(horizontal = Dimens.m4).fillMaxWidth()) {
             val (actionBack, coverId, titleId, subtitleId,
                 followBtnId, moreBtnId, introductionId,
                 seeMoreId, categoryId) = createRefs()
@@ -53,11 +48,11 @@ fun ChannelPage(channelItem: ChannelItem) {
 
             CoilImage(data = channelItem.imageUrl,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.preferredSize(channelCoverSize)
+                modifier = Modifier.preferredSize(Dimens.channelCoverSize)
                     .clip(MaterialTheme.shapes.medium)
                     .constrainAs(coverId) {
                         start.linkTo(parent.start)
-                        top.linkTo(actionBack.bottom, m3)
+                        top.linkTo(actionBack.bottom, Dimens.m3)
                     })
 
             EllipsisText(text = channelItem.title,
@@ -65,7 +60,7 @@ fun ChannelPage(channelItem: ChannelItem) {
                 color = Colors.white,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(titleId) {
-                    start.linkTo(coverId.end, m4)
+                    start.linkTo(coverId.end, Dimens.m4)
                     end.linkTo(parent.end)
                     top.linkTo(coverId.top)
                     bottom.linkTo(coverId.bottom)
@@ -83,13 +78,13 @@ fun ChannelPage(channelItem: ChannelItem) {
                 }
             )
 
-            OutlinedButton(onClick = { /* todo */ },
+            OutlinedButton(onClick = { /* todo: [Amy] click event */ },
                 colors = ButtonConstants.defaultButtonColors(
                     backgroundColor = Colors.black
                 ),
-                border = BorderStroke(buttonBorder, Colors.white),
+                border = BorderStroke(Dimens.buttonBorder, Colors.white),
                 modifier = Modifier.constrainAs(followBtnId) {
-                    top.linkTo(coverId.bottom, m3)
+                    top.linkTo(coverId.bottom, Dimens.m3)
                     start.linkTo(coverId.start)
                 }) {
 
@@ -104,7 +99,7 @@ fun ChannelPage(channelItem: ChannelItem) {
                 )
             }
 
-            IconButton(onClick = { /* todo */ },
+            IconButton(onClick = { /* todo: [Amy] click event */ },
                 modifier = Modifier.constrainAs(moreBtnId) {
                     top.linkTo(followBtnId.top)
                     bottom.linkTo(followBtnId.bottom)
@@ -112,19 +107,19 @@ fun ChannelPage(channelItem: ChannelItem) {
                 }) {
                 Icon(
                     asset = Icons.Default.MoreVert,
-                    tint = Colors.lightGray
+                    tint = Colors.gray400
                 )
             }
 
             val maxLines = if (channelItem.isExpanded) Int.MAX_VALUE else 2
             EllipsisText(
                 text = channelItem.introduction,
-                color = Colors.lightGray,
+                color = Colors.gray400,
                 maxLines = maxLines,
                 modifier = Modifier.constrainAs(introductionId) {
                     start.linkTo(coverId.start)
                     end.linkTo(seeMoreId.start)
-                    top.linkTo(followBtnId.bottom, m3)
+                    top.linkTo(followBtnId.bottom, Dimens.m3)
                     width = Dimension.fillToConstraints
                 })
 
@@ -146,14 +141,14 @@ fun ChannelPage(channelItem: ChannelItem) {
                     .constrainAs(categoryId) {
                         start.linkTo(coverId.start)
                         end.linkTo(titleId.end)
-                        top.linkTo(introductionId.bottom, m3)
+                        top.linkTo(introductionId.bottom, Dimens.m3)
                     }
             ) { item ->
                 OutlinedButton(
-                    shape = RoundedCornerShape(m4),
-                    onClick = { /* todo */ },
+                    shape = RoundedCornerShape(50F),
+                    onClick = { /* todo: [Amy] click event */ },
                     colors = ButtonConstants.defaultButtonColors(backgroundColor = Colors.black),
-                    border = BorderStroke(buttonBorder, Colors.white),
+                    border = BorderStroke(Dimens.buttonBorder, Colors.white),
                 ) {
                     Text(
                         color = Colors.white,
@@ -161,14 +156,14 @@ fun ChannelPage(channelItem: ChannelItem) {
                     )
                 }
 
-                Spacer(modifier = Modifier.preferredWidth(m2))
+                Spacer(modifier = Modifier.preferredWidth(Dimens.m2))
             }
         }
 
         EpisodeItemList(
             channelName = channelItem.title,
             episodeItemList = channelItem.episodeList,
-            modifier = Modifier.padding(start = m4, end = m4).fillMaxWidth()
+            modifier = Modifier.padding(start = Dimens.m4, end = Dimens.m4).fillMaxWidth()
         )
     }
 }

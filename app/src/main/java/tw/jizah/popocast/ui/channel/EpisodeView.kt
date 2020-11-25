@@ -23,20 +23,18 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.theme.Colors
-import tw.jizah.popocast.ui.theme.Dimens.episodeListCoverSize
-import tw.jizah.popocast.ui.theme.Dimens.m1
-import tw.jizah.popocast.ui.theme.Dimens.m2
-import tw.jizah.popocast.ui.theme.Dimens.m4
-import tw.jizah.popocast.ui.theme.Dimens.m9
+import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.widget.EllipsisText
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun EpisodeItemList(channelName: String,
-                    episodeItemList: List<EpisodeItem>,
-                    modifier: Modifier = Modifier.fillMaxWidth()) {
-    // TODO DEBUG [Amy] logic for player info
+fun EpisodeItemList(
+    channelName: String,
+    episodeItemList: List<EpisodeItem>,
+    modifier: Modifier = Modifier.fillMaxWidth()
+) {
+    // todo: [Amy] logic for player info
     val playerInfo = "昨天"
 
     Column(modifier = modifier) {
@@ -47,16 +45,18 @@ fun EpisodeItemList(channelName: String,
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold,
                 color = Colors.white,
-                modifier = Modifier.padding(top = m2, bottom = m2).constrainAs(headerId) {
-                    start.linkTo(parent.start)
-                    end.linkTo(sortBtnId.start)
-                    top.linkTo(parent.top, m2)
-                    width = Dimension.fillToConstraints
-                })
+                modifier = Modifier
+                    .padding(top = Dimens.m2, bottom = Dimens.m2)
+                    .constrainAs(headerId) {
+                        start.linkTo(parent.start)
+                        end.linkTo(sortBtnId.start)
+                        top.linkTo(parent.top, Dimens.m2)
+                        width = Dimension.fillToConstraints
+                    })
 
-            Button(onClick = { /* todo */ },
+            Button(onClick = { /* todo: [Amy] click event */ },
                 colors = ButtonConstants.defaultButtonColors(
-                    backgroundColor = Colors.darkGray
+                    backgroundColor = Colors.gray800
                 ),
                 modifier = Modifier.constrainAs(sortBtnId) {
                     end.linkTo(parent.end)
@@ -64,17 +64,17 @@ fun EpisodeItemList(channelName: String,
                     bottom.linkTo(headerId.bottom)
                 }
             ) {
-                Text(text = stringResource(id = R.string.sort), color = Colors.lightGray)
+                Text(text = stringResource(id = R.string.sort), color = Colors.gray400)
             }
         }
 
-        Spacer(modifier = Modifier.preferredHeight(m2))
+        Spacer(modifier = Modifier.preferredHeight(Dimens.m2))
 
         LazyColumnFor(
             modifier = Modifier.fillMaxWidth(),
             items = episodeItemList,
         ) { item ->
-            /* todo : logic for progress and play state */
+            /* todo : [Amy] logic for progress and play state */
             Column {
                 EpisodeItemView(
                     imageUrl = item.imageUrl,
@@ -85,7 +85,7 @@ fun EpisodeItemList(channelName: String,
                     isPlaying = false,
                     progress = 0.2F
                 )
-                Spacer(modifier = Modifier.preferredSize(m2))
+                Spacer(modifier = Modifier.preferredSize(Dimens.m2))
             }
         }
     }
@@ -104,8 +104,8 @@ fun EpisodeItemView(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(m2),
-        backgroundColor = Colors.darkGray
+        shape = RoundedCornerShape(Dimens.m2),
+        backgroundColor = Colors.gray800
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (coverId, titleId, subtitleId, moreIconId,
@@ -114,11 +114,11 @@ fun EpisodeItemView(
             CoilImage(
                 data = imageUrl,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.preferredSize(episodeListCoverSize)
+                modifier = Modifier.preferredSize(Dimens.episodeListCoverSize)
                     .clip(MaterialTheme.shapes.medium)
                     .constrainAs(coverId) {
-                        start.linkTo(parent.start, m4)
-                        top.linkTo(parent.top, m4)
+                        start.linkTo(parent.start, Dimens.m4)
+                        top.linkTo(parent.top, Dimens.m4)
                     }
             )
 
@@ -129,8 +129,8 @@ fun EpisodeItemView(
                 fontWeight = FontWeight.Bold,
                 color = Colors.white,
                 modifier = Modifier.constrainAs(titleId) {
-                    start.linkTo(coverId.end, m4)
-                    end.linkTo(moreIconId.start, m1)
+                    start.linkTo(coverId.end, Dimens.m4)
+                    end.linkTo(moreIconId.start, Dimens.m1)
                     top.linkTo(coverId.top)
                     width = Dimension.fillToConstraints
                 }
@@ -138,17 +138,17 @@ fun EpisodeItemView(
 
             EllipsisText(text = subTitle,
                 style = MaterialTheme.typography.subtitle2,
-                color = Colors.lightGray,
+                color = Colors.gray400,
                 modifier = Modifier.constrainAs(subtitleId) {
                     start.linkTo(titleId.start)
                     end.linkTo(titleId.end)
-                    top.linkTo(titleId.bottom, m1)
+                    top.linkTo(titleId.bottom, Dimens.m1)
                     width = Dimension.fillToConstraints
                 }
             )
 
             IconButton(
-                onClick = { /* todo */ },
+                onClick = { /* todo: [Amy] click event */ },
                 modifier = Modifier.constrainAs(moreIconId) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
@@ -156,7 +156,7 @@ fun EpisodeItemView(
                 icon = {
                     Icon(
                         asset = Icons.Default.MoreVert,
-                        tint = Colors.lightGray
+                        tint = Colors.gray400
                     )
                 },
             )
@@ -164,10 +164,10 @@ fun EpisodeItemView(
             EllipsisText(text = itemInfo,
                 maxLines = 2,
                 style = MaterialTheme.typography.subtitle2,
-                color = Colors.lightGray,
+                color = Colors.gray400,
                 modifier = Modifier.constrainAs(channelInfoId) {
                     start.linkTo(coverId.start)
-                    top.linkTo(coverId.bottom, m2)
+                    top.linkTo(coverId.bottom, Dimens.m2)
                     end.linkTo(moreIconId.end)
                     width = Dimension.fillToConstraints
                 }
@@ -176,17 +176,17 @@ fun EpisodeItemView(
             Box(
                 alignment = Alignment.Center,
                 modifier = Modifier
-                    .preferredSize(m9)
+                    .preferredSize(Dimens.m9)
                     .clip(CircleShape)
                     .background(Colors.white)
                     .constrainAs(playerIconId) {
                         start.linkTo(coverId.start)
-                        top.linkTo(channelInfoId.bottom, m1)
-                        bottom.linkTo(parent.bottom, m4)
+                        top.linkTo(channelInfoId.bottom, Dimens.m1)
+                        bottom.linkTo(parent.bottom, Dimens.m4)
                     }
             ) {
                 IconButton(
-                    onClick = { /* todo */ },
+                    onClick = { /* todo: [Amy] click event */ },
                 ) {
                     if (isPlaying) {
                         Icon(Icons.Filled.Pause)
@@ -198,10 +198,10 @@ fun EpisodeItemView(
 
             EllipsisText(text = playerInfo,
                 style = MaterialTheme.typography.overline,
-                color = Colors.lightGray,
+                color = Colors.gray400,
                 modifier = Modifier.constrainAs(itemInfoId) {
-                    start.linkTo(playerIconId.end, m2)
-                    end.linkTo(moreIconId.end, m1)
+                    start.linkTo(playerIconId.end, Dimens.m2)
+                    end.linkTo(moreIconId.end, Dimens.m1)
                     top.linkTo(playerIconId.top)
                     bottom.linkTo(playerIconId.bottom)
                     width = Dimension.fillToConstraints
@@ -216,7 +216,7 @@ fun EpisodeItemView(
                         bottom.linkTo(parent.bottom)
                     },
                     progress = progress,
-                    color = Colors.playerControllerProgress
+                    color = Colors.yellow
                 )
             }
 
@@ -229,16 +229,16 @@ fun EpisodeItemView(
 fun previewItemList() {
     EpisodeItemList(channelName = "百靈果NEWS",
         episodeItemList = (0..10).map { index ->
-        EpisodeItem(
-            imageUrl = "https://picsum.photos/300/300",
-            itemName = "This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index",
-            itemInfo = "This is item info This is item info This is item info This is item info This is item info This is item info",
-            releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
-                (index + 1).toLong(),
-                TimeUnit.DAYS
+            EpisodeItem(
+                imageUrl = "https://picsum.photos/300/300",
+                itemName = "This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index",
+                itemInfo = "This is item info This is item info This is item info This is item info This is item info This is item info",
+                releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
+                    (index + 1).toLong(),
+                    TimeUnit.DAYS
+                )
             )
-        )
-    })
+        })
 }
 
 @Preview
