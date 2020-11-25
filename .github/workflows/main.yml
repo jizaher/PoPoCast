@@ -10,8 +10,6 @@ on:
     types: [opened, closed, reopened, assigned]
   pull_request:
     types: [opened, closed, reopened]
-  pull_request_review_comment:
-    types: created
 
 jobs:
   build:
