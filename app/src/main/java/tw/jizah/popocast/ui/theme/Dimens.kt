@@ -14,6 +14,11 @@ object Dimens {
     val m9 = 36.dp
     val m10 = 40.dp
 
+    val buttonBorder = 1.dp
+
     val playerControllerSize = 80.dp
     val searchItemImageSize = 60.dp
+
+    val episodeListCoverSize = 80.dp
+    val channelCoverSize = 120.dp
 }

@@ -3,4 +3,10 @@
     <string name="search">Search</string>
     <string name="recent_searches">Recent searches</string>
     <string name="clear_recent_searches">Clear recent searches</string>
+    <string name="all_episodes">All episodes</string>
+    <string name="sort">Sort</string>
+    <string name="see_less">See less</string>
+    <string name="see_more">See more</string>
+    <string name="followed">Follow</string>
+    <string name="not_yet_followed">Following</string>
 </resources>
