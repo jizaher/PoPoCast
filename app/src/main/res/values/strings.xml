@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">PoPoCast</string>
+    <string name="search">Search</string>
+    <string name="recent_searches">Recent searches</string>
+    <string name="clear_recent_searches">Clear recent searches</string>
     <string name="all_episodes">All episodes</string>
     <string name="sort">Sort</string>
     <string name="see_less">See less</string>

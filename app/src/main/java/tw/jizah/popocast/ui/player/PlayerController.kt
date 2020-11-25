@@ -23,12 +23,12 @@ fun PlayerController() {
     val isPlaying by viewModel.isPlaying.collectAsState()
     val progress by viewModel.progress.collectAsState()
 
-    Surface(color = Colors.playerControllerBg) {
+    Surface(color = Colors.gray900) {
         Column {
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
                 progress = progress,
-                color = Colors.playerControllerProgress
+                color = Colors.yellow
             )
             val size = Dimens.playerControllerSize
             Row(modifier = Modifier.height(size).fillMaxWidth()) {
@@ -42,18 +42,18 @@ fun PlayerController() {
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(8F)
-                        .padding(Dimens.playerControllerTextPadding)
+                        .padding(Dimens.m1)
                 ) {
                     Column(modifier = Modifier.align(Alignment.CenterStart)) {
                         EllipsisText(
                             text = "podcast title podcast title podcast title podcast title",
                             style = MaterialTheme.typography.subtitle1,
-                            color = Colors.playerControllerTitleText,
+                            color = Colors.white,
                         )
                         EllipsisText(
                             text = "podcast owner",
                             style = MaterialTheme.typography.subtitle2,
-                            color = Colors.playerControllerOwnerText,
+                            color = Colors.gray500,
                         )
                     }
                 }
