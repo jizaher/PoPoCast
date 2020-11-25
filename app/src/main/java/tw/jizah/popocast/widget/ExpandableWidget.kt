@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun ExpandableWidget(
     expandedState: MutableState<Boolean> = remember { mutableStateOf(false) },
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     expandedContent: @Composable () -> Unit,
     collapsedContent: @Composable () -> Unit
 ) {

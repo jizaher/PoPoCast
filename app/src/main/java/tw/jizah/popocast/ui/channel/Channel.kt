@@ -197,7 +197,6 @@ fun ChannelPage(channelItem: ChannelItem) {
 @Composable
 fun ExpandingTextPreview() {
     ExpandableWidget(
-        modifier = Modifier,
         expandedContent = {
             Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
         },
