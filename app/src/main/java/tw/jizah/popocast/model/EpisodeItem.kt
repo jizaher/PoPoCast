@@ -4,5 +4,7 @@ data class EpisodeItem(
     val imageUrl: String,
     val itemName: String,
     val itemInfo: String,
-    val releaseTime: Long
+    val releaseTime: Long,
+    val duration: Long,
+    val description: String
 )
