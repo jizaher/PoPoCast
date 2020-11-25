@@ -8,8 +8,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -23,7 +25,9 @@ import tw.jizah.popocast.model.ChannelItem
 import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
+import tw.jizah.popocast.widget.CenterRow
 import tw.jizah.popocast.widget.EllipsisText
+import tw.jizah.popocast.widget.ExpandableWidget
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -33,7 +37,7 @@ fun ChannelPage(channelItem: ChannelItem) {
         ConstraintLayout(modifier = Modifier.padding(horizontal = Dimens.m4).fillMaxWidth()) {
             val (actionBack, coverId, titleId, subtitleId,
                 followBtnId, moreBtnId, introductionId,
-                seeMoreId, categoryId) = createRefs()
+                categoryId) = createRefs()
 
             IconButton(onClick = {},
                 modifier = Modifier.constrainAs(actionBack) {
@@ -111,29 +115,50 @@ fun ChannelPage(channelItem: ChannelItem) {
                 )
             }
 
-            val maxLines = if (channelItem.isExpanded) Int.MAX_VALUE else 2
-            EllipsisText(
-                text = channelItem.introduction,
-                color = Colors.gray400,
-                maxLines = maxLines,
+            val expandedState = remember { mutableStateOf(false) }
+            ExpandableWidget(
+                expandedState = expandedState,
                 modifier = Modifier.constrainAs(introductionId) {
                     start.linkTo(coverId.start)
-                    end.linkTo(seeMoreId.start)
+                    end.linkTo(titleId.end)
                     top.linkTo(followBtnId.bottom, Dimens.m3)
                     width = Dimension.fillToConstraints
-                })
-
-            val stringId = if (channelItem.isExpanded) R.string.see_less else R.string.see_more
-            Text(text = stringResource(id = stringId),
-                color = Colors.white,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.constrainAs(seeMoreId) {
-                    end.linkTo(titleId.end)
-                    top.linkTo(introductionId.top)
-                    bottom.linkTo(introductionId.bottom)
-                    height = Dimension.wrapContent
-                    width = Dimension.wrapContent
-                })
+                },
+                expandedContent = {
+                    Text(
+                        text = channelItem.introduction,
+                        color = Colors.gray400
+                    )
+                    CenterRow {
+                        Text(
+                            text = stringResource(id = R.string.see_less),
+                            color = Colors.white,
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(onClick = { expandedState.value = false }) {
+                            Icon(Icons.Default.ExpandLess, tint = Colors.white)
+                        }
+                    }
+                },
+                collapsedContent = {
+                    EllipsisText(
+                        text = channelItem.introduction,
+                        maxLines = 2,
+                        color = Colors.gray400
+                    )
+                    CenterRow {
+                        Text(
+                            text = stringResource(id = R.string.see_more),
+                            color = Colors.white,
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(
+                            onClick = { expandedState.value = true }) {
+                            Icon(Icons.Default.ExpandMore, tint = Colors.white)
+                        }
+                    }
+                }
+            )
 
             LazyRowFor(items = channelItem.categoryList,
                 modifier = Modifier
@@ -170,27 +195,42 @@ fun ChannelPage(channelItem: ChannelItem) {
 
 @Preview
 @Composable
+fun ExpandingTextPreview() {
+    ExpandableWidget(
+        modifier = Modifier,
+        expandedContent = {
+            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
+        },
+        collapsedContent = {
+            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
+
+        }
+    )
+}
+
+@Preview
+@Composable
 fun ChannelPagePreview() {
     ChannelPage(
         ChannelItem(
             imageUrl = "https://picsum.photos/300/300",
-            title = "百靈果NEWS",
-            subtitle = "百靈果NEWS",
-            introduction = "在這裏，Kylie跟Ken，用雙語的對話包裝知識，用輕鬆的口吻胡說八道。我們閒聊也談正經事，讓生硬的國際大事變得鬆軟好入口；歡迎你加入這外表看似嘴砲，內容卻異於常人的有料聊天。",
+            title = "Channel title",
+            subtitle = "Author",
+            introduction = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction",
             isFollowed = true,
             isExpanded = true,
-            categoryList = listOf(CategoryItem("喜劇", ""), CategoryItem("知識", "")),
+            categoryList = listOf(CategoryItem("Comedy", ""), CategoryItem("Knowledge", "")),
             episodeList = (0..10).map { index ->
-                    EpisodeItem(
-                        imageUrl = "https://picsum.photos/300/300",
-                        itemName = "This is item title $index",
-                        itemInfo = "This is item info",
-                        releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
-                            (index + 1).toLong(),
-                            TimeUnit.DAYS
-                        )
+                EpisodeItem(
+                    imageUrl = "https://picsum.photos/300/300",
+                    itemName = "This is item title $index",
+                    itemInfo = "This is item info",
+                    releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
+                        (index + 1).toLong(),
+                        TimeUnit.DAYS
                     )
-                }
+                )
+            }
         )
     )
 }
