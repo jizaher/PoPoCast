@@ -114,7 +114,7 @@ private fun SearchCategory(category: CategoryItem, modifier: Modifier = Modifier
     val categorySizeRatio = 1.6F
     val categoryTextRatio = 0.7F
     val categoryImageRatio = 0.8F
-    val categoryImageYRation = 0.25F
+    val categoryImageYRatio = 0.25F
 
     Layout(
         modifier = modifier
@@ -137,7 +137,7 @@ private fun SearchCategory(category: CategoryItem, modifier: Modifier = Modifier
             textPlaceable.place(x = 0, y = 0)
             imagePlaceable.place(
                 x = textWidth,
-                y = (constraints.maxHeight * categoryImageYRation).toInt()
+                y = (constraints.maxHeight * categoryImageYRatio).toInt()
             )
         }
     }
