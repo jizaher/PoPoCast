@@ -70,6 +70,7 @@ android {
 
 dependencies {
     implementation Libs.Kotlin.stdlib
+    implementation Libs.Kotlin.datetime
     implementation Libs.Coroutines.android
 
     implementation Libs.AndroidX.coreKtx

@@ -227,7 +227,9 @@ fun ChannelPagePreview() {
                     releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
                         (index + 1).toLong(),
                         TimeUnit.DAYS
-                    )
+                    ),
+                        duration = 0L,
+                        description = ""
                 )
             }
         )

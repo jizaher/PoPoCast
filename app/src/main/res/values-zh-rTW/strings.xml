@@ -11,4 +11,10 @@
     <string name="recent_searches">最近的搜尋</string>
     <string name="clear_recent_searches">清除最近的搜尋紀錄</string>
     <string name="podcasts">播客</string>
+
+    <string name="time_unit_hour">時</string>
+    <string name="time_unit_minute">分</string>
+    <string name="podcast_play">播放</string>
+    <string name="podcast_pause">暫停</string>
+    <string name="see_all_episodes">查看所有集數</string>
 </resources>
