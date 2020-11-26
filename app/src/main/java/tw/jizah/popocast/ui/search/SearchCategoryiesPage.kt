@@ -97,11 +97,11 @@ private fun SearchCategoryCollection(
                 .padding(horizontal = Dimens.m3, vertical = Dimens.m1)
                 .wrapContentHeight()
         )
-        VerticalGrid {
+        VerticalGrid(modifier = Modifier.padding(Dimens.searchCategoryPadding)) {
             collection.categories.forEach { category ->
                 SearchCategory(
                     category = category,
-                    modifier = Modifier.padding(Dimens.m3)
+                    modifier = Modifier.padding(Dimens.searchCategoryPadding)
                 )
             }
         }
