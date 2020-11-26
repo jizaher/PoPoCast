@@ -52,7 +52,7 @@ fun EpisodeDetail(
 private fun EpisodeAppBar(
         modifier: Modifier = Modifier
 ) {
-    val iconTint = Color.White
+    val iconTint = Colors.white
     ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
         val (backButton, moreButton) = createRefs()
         Icon(
@@ -210,7 +210,6 @@ fun formatDuration(context: Context, durationInMillis: Long): String {
     return durationBuilder.toString()
 }
 
-@Composable
 private fun formatDate(dateInMillis: Long): String {
     // TODO: [Zoey] format date
     val tz = TimeZone.currentSystemDefault()
