@@ -12,9 +12,19 @@
     <string name="clear_recent_searches">清除最近的搜尋紀錄</string>
     <string name="podcasts">播客</string>
 
-    <string name="time_unit_hour">時</string>
-    <string name="time_unit_minute">分</string>
+    <plurals name="time_unit_hour">
+        <item quantity="one">%d 時</item>
+        <item quantity="other">%d 時</item>
+    </plurals>
+
+    <plurals name="time_unit_minute">
+        <item quantity="one">%d 分</item>
+        <item quantity="other">%d 分</item>
+    </plurals>
+
+    <string name="time_remaining">還剩 %s</string>
     <string name="podcast_play">播放</string>
     <string name="podcast_pause">暫停</string>
+    <string name="podcast_played">已播放</string>
     <string name="see_all_episodes">查看所有集數</string>
 </resources>
