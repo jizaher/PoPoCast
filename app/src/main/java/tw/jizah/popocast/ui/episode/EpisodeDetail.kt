@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
@@ -30,7 +29,7 @@ import tw.jizah.popocast.ui.theme.Dimens
 import kotlin.time.ExperimentalTime
 import kotlin.time.milliseconds
 
-const val MINUTES_PER_HOUR = 60
+private const val MILLISECONDS_PER_MINUTES = 60000
 
 @Composable
 fun EpisodeDetail(
@@ -183,28 +182,22 @@ private fun SeeAllEpisodes(
 
 @OptIn(ExperimentalTime::class)
 fun formatDuration(context: Context, durationInMillis: Long): String {
-    val period = durationInMillis.milliseconds.toDateTimePeriod()
-    var minutes = if (period.seconds > 0) {
-        period.minutes + 1
+    val carry1MinDuration = if (durationInMillis % MILLISECONDS_PER_MINUTES > 0) {
+        // carry one minute
+        durationInMillis + MILLISECONDS_PER_MINUTES
     } else {
-        period.minutes
+        durationInMillis
     }
-
-    val hours = if (minutes >= MINUTES_PER_HOUR) {
-        minutes -= MINUTES_PER_HOUR
-        period.hours + 1
-    } else {
-        period.hours
-    }
+    val period = carry1MinDuration.milliseconds.toDateTimePeriod()
 
     // TODO: [Zoey] duration string quantity
     val durationBuilder = StringBuilder()
-    if (hours > 0) {
-        durationBuilder.append("$hours ${context.getString(R.string.time_unit_hour)} ")
+    if (period.hours > 0) {
+        durationBuilder.append("${period.hours} ${context.getString(R.string.time_unit_hour)} ")
     }
 
-    if (minutes > 0) {
-        durationBuilder.append("$minutes ${context.getString(R.string.time_unit_minute)}")
+    if (period.minutes > 0) {
+        durationBuilder.append("${period.minutes} ${context.getString(R.string.time_unit_minute)}")
     }
 
     return durationBuilder.toString()
