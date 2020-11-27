@@ -123,26 +123,31 @@ private fun PlayStateInfo(
 ) {
     val formattedDate = formatDate(releaseTime)
     val timeRemaining = playState.duration - playState.elapsedTime
-    val formattedTime = if (playState.duration == playState.elapsedTime) {
-        stringResource(id = R.string.podcast_played)
-    } else {
-        val formattedTimeRemaining = formatDuration(timeRemaining)
-        if (playState.elapsedTime == 0L) {
+    val isNotStarted = (playState.elapsedTime == 0L)
+    val formattedTime = when {
+        isNotStarted -> {
+            formatDuration(timeRemaining)
+        }
+        playState.duration == playState.elapsedTime -> {
+            stringResource(id = R.string.podcast_played)
+        }
+        else -> {
+            val formattedTimeRemaining = formatDuration(timeRemaining)
             stringResource(id = R.string.time_remaining, formattedTimeRemaining)
-        } else {
-            formattedTimeRemaining
         }
     }
 
     val progress = (playState.elapsedTime.toFloat()).div(playState.duration.toFloat())
     Row(modifier = modifier.padding(vertical = Dimens.m1)) {
         Text(text = "$formattedDate • $formattedTime", style = MaterialTheme.typography.overline, color = Colors.gray600)
-        EpisodeProgressBar(
-            progress = progress,
-            modifier = Modifier.align(Alignment.CenterVertically)
+        if (!isNotStarted) {
+            EpisodeProgressBar(
+                progress = progress,
+                modifier = Modifier.align(Alignment.CenterVertically)
                     .padding(horizontal = Dimens.m3)
                     .preferredWidth(Dimens.episodeProgressBarWidth)
-        )
+            )
+        }
     }
 }
 
@@ -245,7 +250,8 @@ fun formatDuration(durationInMillis: Long): String {
 
     val durationBuilder = StringBuilder()
     if (period.hours > 0) {
-        durationBuilder.append(quantityStringResource(R.plurals.time_unit_hour, period.hours, period.hours) + " ")
+        durationBuilder.append(quantityStringResource(R.plurals.time_unit_hour, period.hours, period.hours))
+        durationBuilder.append(" ")
     }
 
     if (period.minutes > 0) {
