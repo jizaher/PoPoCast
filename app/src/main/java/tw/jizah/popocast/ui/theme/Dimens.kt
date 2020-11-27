@@ -18,7 +18,13 @@ object Dimens {
 
     val playerControllerSize = 80.dp
     val searchItemImageSize = 60.dp
+    val searchCategoryPadding = 6.dp
 
     val episodeListCoverSize = 80.dp
     val channelCoverSize = 120.dp
+
+    val episodeCoverSize = 56.dp
+    val episodePlayButtonMinWidth = 160.dp
+    val episodePlayButtonMinHeight = 52.dp
+    val episodeProgressBarWidth = 60.dp
 }

@@ -9,4 +9,21 @@
     <string name="see_more">See more</string>
     <string name="followed">Follow</string>
     <string name="not_yet_followed">Following</string>
+    <string name="podcasts">Podcasts</string>
+
+    <plurals name="time_unit_hour">
+        <item quantity="one">%d HR</item>
+        <item quantity="other">%d HRS</item>
+    </plurals>
+
+    <plurals name="time_unit_minute">
+        <item quantity="one">%d MIN</item>
+        <item quantity="other">%d MINS</item>
+    </plurals>
+
+    <string name="time_remaining">%s LEFT</string>
+    <string name="podcast_play">PLAY</string>
+    <string name="podcast_pause">PAUSE</string>
+    <string name="podcast_played">PLAYED</string>
+    <string name="see_all_episodes">See all episodes</string>
 </resources>
