@@ -26,4 +26,5 @@ object Dimens {
     val episodeCoverSize = 56.dp
     val episodePlayButtonMinWidth = 160.dp
     val episodePlayButtonMinHeight = 52.dp
+    val episodeProgressBarWidth = 60.dp
 }
