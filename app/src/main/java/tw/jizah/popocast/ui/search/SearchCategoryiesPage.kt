@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -43,9 +45,10 @@ fun SearchCategoriesPage() {
         color = Colors.black,
         modifier = Modifier.fillMaxSize()
     ) {
+        val state = rememberLazyListState()
         Column {
-            SearchSection()
-            LazyColumnFor(items = getCategoryCollections()) {
+            SearchSection(state)
+            LazyColumnFor(items = getCategoryCollections(), state = state) {
                 SearchCategoryCollection(collection = it)
             }
             Spacer(Modifier.preferredHeight(Dimens.m3))
@@ -54,32 +57,56 @@ fun SearchCategoriesPage() {
 }
 
 @Composable
-fun SearchSection() {
-    Column(modifier = Modifier.fillMaxWidth().padding(Dimens.m3)) {
-        Text(
-            text = stringResource(id = R.string.search),
-            color = Colors.white,
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(bottom = Dimens.m3)
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(
-                    color = Colors.white,
-                    shape = RoundedCornerShape(Dimens.m1)
-                )
-                .fillMaxWidth()
-                .padding(Dimens.m3)
-        ) {
-            Icon(asset = Icons.Filled.Search, tint = Colors.gray700)
-            Text(
-                text = stringResource(id = R.string.podcasts),
-                color = Colors.gray700,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(start = Dimens.m3)
-            )
+fun SearchSection(state: LazyListState) {
+    Layout(
+        modifier = Modifier.fillMaxWidth().padding(Dimens.m3),
+        children = { SearchSectionContent() }
+    ) { measurables, constraints ->
+        val textPlaceable = measurables[0].measure(constraints)
+        val searchBarPlaceable = measurables[1].measure(constraints)
+        val placeY: Int = if (state.firstVisibleItemIndex == 0
+            && state.firstVisibleItemScrollOffset < textPlaceable.height) {
+            state.firstVisibleItemScrollOffset
+        } else {
+            textPlaceable.height
         }
+        val remainingTextHeight = textPlaceable.height - placeY
+
+        layout(
+            width = constraints.maxWidth,
+            height = searchBarPlaceable.height + remainingTextHeight
+        ) {
+            textPlaceable.place(0, -placeY)
+            searchBarPlaceable.place(0, remainingTextHeight)
+        }
+    }
+}
+
+@Composable
+fun SearchSectionContent() {
+    Text(
+        text = stringResource(id = R.string.search),
+        color = Colors.white,
+        style = MaterialTheme.typography.h4,
+        modifier = Modifier.padding(bottom = Dimens.m3)
+    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .background(
+                color = Colors.white,
+                shape = RoundedCornerShape(Dimens.m1)
+            )
+            .fillMaxWidth()
+            .padding(Dimens.m3)
+    ) {
+        Icon(asset = Icons.Filled.Search, tint = Colors.gray700)
+        Text(
+            text = stringResource(id = R.string.podcasts),
+            color = Colors.gray700,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(start = Dimens.m3)
+        )
     }
 }
 
