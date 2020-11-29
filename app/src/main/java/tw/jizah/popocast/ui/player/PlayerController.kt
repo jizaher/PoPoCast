@@ -1,5 +1,7 @@
 package tw.jizah.popocast.ui.player
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,22 +22,22 @@ import tw.jizah.popocast.widget.EllipsisText
 @Composable
 fun PlayerController() {
     val viewModel: PlayerViewModel = viewModel(modelClass = PlayerViewModel::class.java)
-    val isPlaying by viewModel.isPlaying.collectAsState()
-    val progress by viewModel.progress.collectAsState()
+    val isPlayingState by viewModel.isPlaying.collectAsState()
+    val progressState by viewModel.progress.collectAsState()
 
     Surface(color = Colors.gray900) {
         Column {
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                progress = progress,
+                progress = progressState,
                 color = Colors.yellow
             )
             val size = Dimens.playerControllerSize
-            Row(modifier = Modifier.height(size).fillMaxWidth()) {
+            Row(modifier = Modifier.preferredHeight(size).fillMaxWidth()) {
                 Box(modifier = Modifier.width(size)) {
                     CoilImage(
                         data = "https://picsum.photos/300/300",
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Crop
                     )
                 }
                 Box(
@@ -64,7 +66,8 @@ fun PlayerController() {
                         onClick = { viewModel.togglePlayOrPause() },
                         modifier = Modifier.align(Alignment.Center),
                     ) {
-                        val icon = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow
+                        val icon =
+                            if (isPlayingState) Icons.Filled.Pause else Icons.Filled.PlayArrow
                         Icon(asset = icon, tint = Colors.white)
                     }
                 }
