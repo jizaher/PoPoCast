@@ -3,7 +3,9 @@ package tw.jizah.popocast.ui.search
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -12,6 +14,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +26,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
@@ -43,43 +50,80 @@ fun SearchCategoriesPage() {
         color = Colors.black,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            SearchSection()
-            LazyColumnFor(items = getCategoryCollections()) {
-                SearchCategoryCollection(collection = it)
+        val state = rememberLazyListState()
+        val searchSectionHeight = remember { mutableStateOf(0.dp) }
+        Box {
+            LazyColumn(state = state) {
+                item {
+                    Spacer(
+                        modifier = Modifier
+                            .padding(bottom = Dimens.m6)
+                            .preferredHeight(searchSectionHeight.value)
+                    )
+                }
+                items(getCategoryCollections()) { SearchCategoryCollection(collection = it) }
             }
-            Spacer(Modifier.preferredHeight(Dimens.m3))
+            SearchSection(state, searchSectionHeight)
         }
     }
 }
 
 @Composable
-fun SearchSection() {
-    Column(modifier = Modifier.fillMaxWidth().padding(Dimens.m3)) {
-        Text(
-            text = stringResource(id = R.string.search),
-            color = Colors.white,
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(bottom = Dimens.m3)
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(
-                    color = Colors.white,
-                    shape = RoundedCornerShape(Dimens.m1)
-                )
-                .fillMaxWidth()
-                .padding(Dimens.m3)
+fun SearchSection(state: LazyListState, searchSectionHeight: MutableState<Dp>) {
+    Layout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Colors.black)
+            .padding(Dimens.m3),
+        children = { SearchSectionContent() }
+    ) { measurables, constraints ->
+        val textPlaceable = measurables[0].measure(constraints)
+        val searchBarPlaceable = measurables[1].measure(constraints)
+        searchSectionHeight.value = (textPlaceable.height + searchBarPlaceable.height).toDp()
+        val placeY: Int = if (state.firstVisibleItemIndex == 0
+            && state.firstVisibleItemScrollOffset < textPlaceable.height
         ) {
-            Icon(asset = Icons.Filled.Search, tint = Colors.gray700)
-            Text(
-                text = stringResource(id = R.string.podcasts),
-                color = Colors.gray700,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(start = Dimens.m3)
-            )
+            state.firstVisibleItemScrollOffset
+        } else {
+            textPlaceable.height
         }
+        val remainingTextHeight = textPlaceable.height - placeY
+
+        layout(
+            width = constraints.maxWidth,
+            height = searchBarPlaceable.height + remainingTextHeight
+        ) {
+            textPlaceable.place(0, -placeY)
+            searchBarPlaceable.place(0, remainingTextHeight)
+        }
+    }
+}
+
+@Composable
+fun SearchSectionContent() {
+    Text(
+        text = stringResource(id = R.string.search),
+        color = Colors.white,
+        style = MaterialTheme.typography.h4,
+        modifier = Modifier.padding(bottom = Dimens.m3)
+    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .background(
+                color = Colors.white,
+                shape = RoundedCornerShape(Dimens.m1)
+            )
+            .fillMaxWidth()
+            .padding(Dimens.m3)
+    ) {
+        Icon(asset = Icons.Filled.Search, tint = Colors.gray700)
+        Text(
+            text = stringResource(id = R.string.podcasts),
+            color = Colors.gray700,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier.padding(start = Dimens.m3)
+        )
     }
 }
 
