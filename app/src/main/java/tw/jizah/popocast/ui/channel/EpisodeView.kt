@@ -2,7 +2,6 @@ package tw.jizah.popocast.ui.channel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -29,64 +28,61 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Composable
+fun AllEpisodeSection(modifier: Modifier = Modifier) {
+    ConstraintLayout(modifier = modifier) {
+        val (headerId, sortBtnId) = createRefs()
+
+        EllipsisText(text = stringResource(id = R.string.all_episodes),
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            color = Colors.white,
+            modifier = Modifier
+                .constrainAs(headerId) {
+                    start.linkTo(parent.start)
+                    end.linkTo(sortBtnId.start)
+                    top.linkTo(parent.top, Dimens.m2)
+                    width = Dimension.fillToConstraints
+                })
+
+        Button(onClick = { /* todo: [Amy] click event */ },
+            colors = ButtonConstants.defaultButtonColors(
+                backgroundColor = Colors.gray800
+            ),
+            modifier = Modifier.padding(vertical = Dimens.m2)
+                .constrainAs(sortBtnId) {
+                end.linkTo(parent.end)
+                top.linkTo(headerId.top)
+                bottom.linkTo(headerId.bottom)
+            }
+        ) {
+            Text(text = stringResource(id = R.string.sort), color = Colors.gray400)
+        }
+    }
+}
+
+@Composable
 fun EpisodeItemList(
     channelName: String,
     episodeItemList: List<EpisodeItem>,
-    modifier: Modifier = Modifier.fillMaxWidth()
+    modifier: Modifier = Modifier,
 ) {
     // todo: [Amy] logic for player info
     val playerInfo = "昨天"
 
-    Column(modifier = modifier) {
-        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-            val (headerId, sortBtnId) = createRefs()
-
-            EllipsisText(text = stringResource(id = R.string.all_episodes),
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-                color = Colors.white,
-                modifier = Modifier
-                    .padding(top = Dimens.m2, bottom = Dimens.m2)
-                    .constrainAs(headerId) {
-                        start.linkTo(parent.start)
-                        end.linkTo(sortBtnId.start)
-                        top.linkTo(parent.top, Dimens.m2)
-                        width = Dimension.fillToConstraints
-                    })
-
-            Button(onClick = { /* todo: [Amy] click event */ },
-                colors = ButtonConstants.defaultButtonColors(
-                    backgroundColor = Colors.gray800
-                ),
-                modifier = Modifier.constrainAs(sortBtnId) {
-                    end.linkTo(parent.end)
-                    top.linkTo(headerId.top)
-                    bottom.linkTo(headerId.bottom)
-                }
-            ) {
-                Text(text = stringResource(id = R.string.sort), color = Colors.gray400)
-            }
-        }
-
-        Spacer(modifier = Modifier.preferredHeight(Dimens.m2))
-
-        LazyColumnFor(
-            modifier = Modifier.fillMaxWidth(),
-            items = episodeItemList,
-        ) { item ->
-            /* todo : [Amy] logic for progress and play state */
-            Column {
-                EpisodeItemView(
-                    imageUrl = item.imageUrl,
-                    title = item.itemName,
-                    subTitle = channelName,
-                    itemInfo = item.itemInfo,
-                    playerInfo = playerInfo,
-                    isPlaying = false,
-                    progress = 0.2F
-                )
-                Spacer(modifier = Modifier.preferredSize(Dimens.m2))
-            }
+    Column(modifier.fillMaxWidth()) {
+        episodeItemList.forEach {
+                item ->
+            EpisodeItemView(
+                modifier = Modifier.fillMaxWidth(),
+                imageUrl = item.imageUrl,
+                title = item.itemName,
+                subTitle = channelName,
+                itemInfo = item.itemInfo,
+                playerInfo = playerInfo,
+                isPlaying = false,
+                progress = 0.2F
+            )
+            Spacer(modifier = Modifier.preferredHeight(Dimens.m2))
         }
     }
 }
@@ -114,7 +110,7 @@ fun EpisodeItemView(
             CoilImage(
                 data = imageUrl,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.preferredSize(Dimens.episodeListCoverSize)
+                modifier = Modifier.size(Dimens.episodeListCoverSize)
                     .clip(MaterialTheme.shapes.medium)
                     .constrainAs(coverId) {
                         start.linkTo(parent.start, Dimens.m4)
@@ -227,7 +223,7 @@ fun EpisodeItemView(
 @Preview
 @Composable
 fun previewItemList() {
-    EpisodeItemList(channelName = "百靈果NEWS",
+    EpisodeItemList(channelName = "channel title",
         episodeItemList = (0..10).map { index ->
             EpisodeItem(
                 imageUrl = "https://picsum.photos/300/300",
@@ -240,7 +236,8 @@ fun previewItemList() {
                 duration = 0L,
                 description = ""
             )
-        })
+        }
+    )
 }
 
 @Preview
