@@ -1,5 +1,8 @@
 package tw.jizah.popocast.ui.episode
 
+import android.text.util.Linkify
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.compose.animation.animate
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.*
@@ -10,12 +13,18 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
+import androidx.core.widget.TextViewCompat
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -35,16 +44,16 @@ private const val MILLISECONDS_PER_MINUTES = 60000
 
 @Composable
 fun EpisodeDetail(
-        channel: ChannelItem,
-        episode: EpisodeItem,
-        playState: PlayState
+    channel: ChannelItem,
+    episode: EpisodeItem,
+    playState: PlayState
 ) {
     Surface(Modifier.fillMaxSize()) {
         ScrollableColumn(modifier = Modifier.fillMaxSize()) {
             EpisodeAppBar(Modifier.fillMaxWidth())
             EpisodeHeader(channel = channel, episode = episode, playState = playState, modifier = Modifier.fillMaxWidth())
             EpisodeButtonBar(modifier = Modifier.fillMaxWidth())
-            EpisodeDescription(episode = episode, modifier = Modifier.fillMaxWidth())
+            EpisodeBody(episode = episode, modifier = Modifier.fillMaxWidth())
             SeeAllEpisodes(modifier = Modifier.fillMaxWidth())
         }
     }
@@ -52,7 +61,7 @@ fun EpisodeDetail(
 
 @Composable
 private fun EpisodeAppBar(
-        modifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     val iconTint = Colors.white
     ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
@@ -91,8 +100,8 @@ private fun EpisodeHeader(
             fadeIn = true,
             contentScale = ContentScale.Crop,
             modifier = Modifier.padding(top = Dimens.m3, bottom = Dimens.m4)
-                    .preferredSize(Dimens.episodeCoverSize)
-                    .clip(RoundedCornerShape(size = Dimens.m1))
+                .preferredSize(Dimens.episodeCoverSize)
+                .clip(RoundedCornerShape(size = Dimens.m1))
         )
         Text(
             text = episode.itemName,
@@ -139,7 +148,7 @@ private fun PlayStateInfo(
 
     val progress = (playState.elapsedTime.toFloat()).div(playState.duration.toFloat())
     Row(modifier = modifier.padding(vertical = Dimens.m1)) {
-        Text(text = "$formattedDate • $formattedTime", style = MaterialTheme.typography.overline, color = Colors.gray600)
+        Text(text = "$formattedDate • $formattedTime", style = MaterialTheme.typography.overline, color = Colors.gray400)
         if (!isNotStarted) {
             EpisodeProgressBar(
                 progress = progress,
@@ -200,7 +209,7 @@ private fun PlayButton(
 }
 
 @Composable
-private fun EpisodeDescription(
+private fun EpisodeBody(
     episode: EpisodeItem,
     modifier: Modifier = Modifier
 ) {
@@ -208,15 +217,41 @@ private fun EpisodeDescription(
     val duration = formatDuration(episode.duration)
     val timeText = "$date • $duration"
     Column(modifier = modifier.padding(Dimens.m3)) {
-        Text (text = episode.description, style = MaterialTheme.typography.body2, color = Colors.gray600)
-        Text(text = timeText, style = MaterialTheme.typography.overline, color = Colors.gray600, modifier = Modifier.padding(vertical = Dimens.m4))
+        EpisodeDescription(description = episode.description)
+        Text(text = timeText, style = MaterialTheme.typography.overline, color = Colors.gray400, modifier = Modifier.padding(vertical = Dimens.m4))
         // TODO: [Zoey] show episode image
     }
 }
 
 @Composable
+private fun EpisodeDescription(
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    val context = ContextAmbient.current
+    val descriptionText = remember {
+        TextView(context).apply {
+            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            TextViewCompat.setTextAppearance(this, R.style.TextAppearance_App_Body2)
+            setTextColor(Colors.gray400.toArgb())
+            setLinkTextColor(Colors.white.toArgb())
+            autoLinkMask = Linkify.ALL
+        }
+    }
+
+    AndroidView(viewBlock = { descriptionText }, modifier = modifier) { textView ->
+        val htmlLineBreak = "<br>"
+        val desc = description.replace("\n", htmlLineBreak)
+        textView.text = HtmlCompat.fromHtml(
+            desc,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+    }
+}
+
+@Composable
 private fun SeeAllEpisodes(
-        modifier: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     ConstraintLayout(modifier = modifier.padding(horizontal = Dimens.m3, vertical = Dimens.m4)) {
         val (titleText, naviIcon) = createRefs()
