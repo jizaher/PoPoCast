@@ -20,11 +20,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawOpacity
 import androidx.compose.ui.focus.ExperimentalFocus
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.node.Ref
 import androidx.compose.ui.res.imageResource
@@ -66,7 +68,7 @@ fun SearchContent() {
         val transitionState = transition(
             definition = searchTransitionDef,
             initState = isSearching.value,
-            toState = !isSearching.value
+            toState = isSearching.value
         )
         SearchBar(isSearching, transitionState)
         RecentSearchTitle()
@@ -86,14 +88,14 @@ private val colorProp = ColorPropKey()
 private val roundCornerProp = DpPropKey()
 private const val transitionDurationMillis = 300
 private val searchTransitionDef = transitionDefinition<Boolean> {
-    state(false) {
+    state(true) {
         this[outerPadding] = 0.dp
         this[innerPadding] = Dimens.m4
         this[visibilityProp] = 1F
         this[colorProp] = Colors.transparent
         this[roundCornerProp] = 0.dp
     }
-    state(true) {
+    state(false) {
         this[outerPadding] = Dimens.m2
         this[innerPadding] = Dimens.m2
         this[visibilityProp] = 0F
