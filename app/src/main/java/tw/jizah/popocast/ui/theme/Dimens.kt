@@ -16,6 +16,7 @@ object Dimens {
     val m12 = 48.dp
 
     val buttonBorder = 1.dp
+    val toolBarHeight = 56.dp
 
     val playerControllerSize = 80.dp
     val searchItemImageSize = 60.dp
