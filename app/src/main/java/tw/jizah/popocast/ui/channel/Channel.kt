@@ -242,6 +242,11 @@ private fun ExpandedDescription(
     modifier: Modifier,
     description: String
 ) {
+
+    fun toggleDescription() {
+        expandedState.value = !expandedState.value
+    }
+
     ExpandableWidget(
         modifier = modifier,
         expandedState = expandedState,
@@ -250,13 +255,13 @@ private fun ExpandedDescription(
                 text = description,
                 color = Colors.gray400
             )
-            CenterRow(modifier = Modifier.clickable(onClick = { expandedState.value = false }))  {
+            CenterRow(modifier = Modifier.clickable(onClick = { toggleDescription() }))  {
                 Text(
                     text = stringResource(id = R.string.see_less),
                     color = Colors.white,
                     fontWeight = FontWeight.Bold
                 )
-                IconButton(onClick = { expandedState.value = false }) {
+                IconButton(onClick = { toggleDescription() }) {
                     Icon(Icons.Default.ExpandLess, tint = Colors.white)
                 }
             }
@@ -267,14 +272,14 @@ private fun ExpandedDescription(
                 maxLines = 2,
                 color = Colors.gray400
             )
-            CenterRow(modifier = Modifier.clickable(onClick = { expandedState.value = true })) {
+            CenterRow(modifier = Modifier.clickable(onClick = { toggleDescription() })) {
                 Text(
                     text = stringResource(id = R.string.see_more),
                     color = Colors.white,
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(
-                    onClick = { expandedState.value = true }) {
+                    onClick = { toggleDescription() }) {
                     Icon(Icons.Default.ExpandMore, tint = Colors.white)
                 }
             }
