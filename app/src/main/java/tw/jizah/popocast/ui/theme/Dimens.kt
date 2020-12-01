@@ -13,6 +13,7 @@ object Dimens {
     val m8 = 32.dp
     val m9 = 36.dp
     val m10 = 40.dp
+    val m12 = 48.dp
 
     val buttonBorder = 1.dp
 

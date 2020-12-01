@@ -39,6 +39,10 @@ object Colors {
     val gray700 = Color(0xFF616161)
     val gray800 = Color(0xFF424242)
     val gray900 = Color(0xFF212121)
+
+    val blueGray800 = Color(0xFF37474F)
+    val blueGray900 = Color(0xFF263238)
+
     val yellow800 = Color(0xFFF29F05)
     val red300 = Color(0xFFEA6D7E)
     val white = Color.White
