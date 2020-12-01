@@ -32,7 +32,7 @@ fun CollapsingTopSection(
     ) { measurables, constraints ->
         val expandedTopBarIndex = 0
         val centerSectionIndex = 1
-        val allEpisodeTitleIndex = 2
+        val stickySectionIndex = 2
         val contentIndexList = listOf(expandedTopBarIndex, centerSectionIndex)
 
         val placeables = measurables.map { measurable -> measurable.measure(constraints) }
@@ -47,7 +47,7 @@ fun CollapsingTopSection(
         }
 
         val toolBarHeightDp =  if(placeables[expandedTopBarIndex].height == 0) 0.dp else Dimens.toolBarHeight
-        val topContentHeight = totalHeight - toolBarHeightDp.toPx() - placeables[allEpisodeTitleIndex].height
+        val topContentHeight = totalHeight - toolBarHeightDp.toPx() - placeables[stickySectionIndex].height
 
         layout(placeables[0].width, totalHeight) {
             var offset = -scrollState.value.toInt()
@@ -56,11 +56,11 @@ fun CollapsingTopSection(
                 offset += placeables[index].height
             }
 
-            // place allEpisodeTitle
+            // place sticky section
             if (scrollState.value > topContentHeight) {
-                placeables[allEpisodeTitleIndex].place(0, toolBarHeightDp.toPx().toInt())
+                placeables[stickySectionIndex].place(0, toolBarHeightDp.toPx().toInt())
             } else {
-                placeables[allEpisodeTitleIndex].place(0, offset)
+                placeables[stickySectionIndex].place(0, offset)
             }
         }
     }
