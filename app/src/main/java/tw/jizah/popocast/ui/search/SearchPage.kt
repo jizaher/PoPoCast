@@ -1,21 +1,42 @@
 package tw.jizah.popocast.ui.search
 
+import androidx.compose.animation.ColorPropKey
+import androidx.compose.animation.DpPropKey
+import androidx.compose.animation.core.FloatPropKey
+import androidx.compose.animation.core.TransitionState
+import androidx.compose.animation.core.transitionDefinition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.transition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawOpacity
+import androidx.compose.ui.focus.ExperimentalFocus
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focusRequester
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.node.Ref
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
@@ -24,12 +45,14 @@ import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.widget.EllipsisText
 
+@ExperimentalFocus
 @Composable
 @Preview
 fun SearchPagePreview() {
     SearchPage()
 }
 
+@ExperimentalFocus
 @Composable
 fun SearchPage() {
     Surface(color = Colors.black, modifier = Modifier.fillMaxSize()) {
@@ -37,10 +60,17 @@ fun SearchPage() {
     }
 }
 
+@ExperimentalFocus
 @Composable
 fun SearchContent() {
     Column {
-        SearchBar()
+        val isSearching = remember { mutableStateOf(false) }
+        val transitionState = transition(
+            definition = searchTransitionDef,
+            initState = isSearching.value,
+            toState = isSearching.value
+        )
+        SearchBar(isSearching, transitionState)
         RecentSearchTitle()
         RecentSearchList(getSearchItems()) {
             // TODO: Ivan
@@ -51,21 +81,106 @@ fun SearchContent() {
     }
 }
 
+private val outerPadding = DpPropKey()
+private val innerPadding = DpPropKey()
+private val visibilityProp = FloatPropKey()
+private val colorProp = ColorPropKey()
+private val roundCornerProp = DpPropKey()
+private const val transitionDurationMillis = 300
+private val searchTransitionDef = transitionDefinition<Boolean> {
+    state(true) {
+        this[outerPadding] = 0.dp
+        this[innerPadding] = Dimens.m4
+        this[visibilityProp] = 1F
+        this[colorProp] = Colors.transparent
+        this[roundCornerProp] = 0.dp
+    }
+    state(false) {
+        this[outerPadding] = Dimens.m2
+        this[innerPadding] = Dimens.m2
+        this[visibilityProp] = 0F
+        this[colorProp] = Colors.white
+        this[roundCornerProp] = Dimens.m1
+    }
+    transition {
+        outerPadding using tween(durationMillis = transitionDurationMillis)
+        innerPadding using tween(durationMillis = transitionDurationMillis)
+        visibilityProp using tween(durationMillis = transitionDurationMillis)
+    }
+}
+
+@ExperimentalFocus
 @Composable
-fun SearchBar() {
-    Row(modifier = Modifier.fillMaxWidth().padding(Dimens.m3)) {
-        Text(
-            text = stringResource(id = R.string.search),
-            textAlign = TextAlign.Center,
-            color = Colors.white,
+fun SearchBar(isSearchingState: MutableState<Boolean>, transitionState: TransitionState) {
+    Box {
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = Colors.gray800,
-                    shape = RoundedCornerShape(Dimens.m1)
-                ).padding(Dimens.m3),
-            style = MaterialTheme.typography.subtitle1
-        )
+                .align(Alignment.CenterStart)
+                .padding(transitionState[outerPadding])
+                .clickable(onClick = {
+                    if (!isSearchingState.value) isSearchingState.value = true
+                })
+        ) {
+            Text(
+                text = stringResource(id = R.string.search),
+                textAlign = TextAlign.Center,
+                color = transitionState[colorProp],
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Colors.gray800,
+                        shape = RoundedCornerShape(transitionState[roundCornerProp])
+                    ).padding(transitionState[innerPadding]),
+                style = MaterialTheme.typography.subtitle1
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.align(Alignment.CenterStart)
+        ) {
+            IconButton(
+                onClick = { isSearchingState.value = false },
+                modifier = Modifier.drawOpacity(transitionState[visibilityProp])
+            ) {
+                Icon(
+                    asset = Icons.Filled.ArrowBack,
+                    tint = Colors.white
+                )
+            }
+            if (isSearchingState.value) {
+                SearchTextField()
+            }
+        }
+    }
+}
+
+@ExperimentalFocus
+@Composable
+fun SearchTextField() {
+    val focusRequester = FocusRequester()
+    val textState = remember { mutableStateOf("") }
+    val keyboardController: Ref<SoftwareKeyboardController> = remember { Ref() }
+    BasicTextField(
+        value = textState.value,
+        textStyle = TextStyle.Default.copy(color = Colors.white),
+        onValueChange = { textState.value = it },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Search,
+            keyboardType = KeyboardType.Text
+        ),
+        maxLines = 1,
+        onImeActionPerformed = { action ->
+            if (action == ImeAction.Search) keyboardController.value?.hideSoftwareKeyboard()
+        },
+        onTextInputStarted = { keyboardController.value = it },
+        cursorColor = Colors.greenA700,
+        modifier = Modifier
+            .background(color = Colors.transparent)
+            .focusRequester(focusRequester)
+    )
+    onActive {
+        focusRequester.requestFocus()
     }
 }
 
