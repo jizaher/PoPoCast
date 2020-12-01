@@ -85,8 +85,7 @@ private val visibilityProp = FloatPropKey()
 private val colorProp = ColorPropKey()
 private val roundCornerProp = DpPropKey()
 private const val transitionDurationMillis = 300
-
-val searchTransitionDef = transitionDefinition<Boolean> {
+private val searchTransitionDef = transitionDefinition<Boolean> {
     state(false) {
         this[outerPadding] = 0.dp
         this[innerPadding] = Dimens.m4
