@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +32,7 @@ import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.widget.CenterRow
+import tw.jizah.popocast.widget.CollapsingTopSection
 import tw.jizah.popocast.widget.EllipsisText
 import tw.jizah.popocast.widget.ExpandableWidget
 import java.util.*
@@ -41,26 +41,25 @@ import java.util.concurrent.TimeUnit
 @Composable
 private fun ExpandedTopToolbar(modifier: Modifier, channelItem: ChannelItem) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            IconButton(onClick = {/* todo: [Amy] click event */ }) {
-                Icon(
-                    asset = Icons.Filled.ArrowBack,
-                    tint = Colors.transparent
-                )
-            }
-        }
+        Spacer(modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight))
         CoverTitleSection(
             channelItem = channelItem,
             modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
                 .padding(bottom = Dimens.m3)
         )
     }
-
 }
 
 @Composable
-private fun CollapsedTopToolbar(modifier: Modifier, channelTitle: String) {
-    ConstraintLayout(modifier = modifier.fillMaxWidth().background(Colors.black)) {
+private fun CollapsedTopToolbar(
+    modifier: Modifier,
+    channelTitle: String,
+    collapseFactorState: MutableState<Float>
+) {
+    ConstraintLayout(
+        modifier = modifier.fillMaxWidth()
+            .background(Colors.black.copy(alpha = collapseFactorState.value))
+    ) {
         val (iconId, titleId) = createRefs()
         IconButton(onClick = {/* todo: [Amy] click event */ },
             modifier = Modifier.constrainAs(iconId) {
@@ -85,7 +84,7 @@ private fun CollapsedTopToolbar(modifier: Modifier, channelTitle: String) {
             textAlign = TextAlign.Center,
             text = channelTitle,
             fontWeight = FontWeight.Bold,
-            color = Colors.white,
+            color = Colors.white.copy(alpha = collapseFactorState.value),
             style = MaterialTheme.typography.h6
         )
     }
@@ -127,7 +126,8 @@ private fun CoverTitleSection(channelItem: ChannelItem, modifier: Modifier) {
 private fun FollowSection(isFollowed: Boolean, modifier: Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         OutlinedButton(
             onClick = { /* todo: [Amy] click event */ },
@@ -147,8 +147,6 @@ private fun FollowSection(isFollowed: Boolean, modifier: Modifier) {
             )
         }
 
-        Spacer(modifier = Modifier.weight(1F))
-
         IconButton(
             onClick = { /* todo: [Amy] click event */ },
             modifier = Modifier
@@ -162,88 +160,22 @@ private fun FollowSection(isFollowed: Boolean, modifier: Modifier) {
 }
 
 @Composable
-fun TopExpandedContent(
+private fun EpisodeListSection(
     channelItem: ChannelItem,
-    expandedState: MutableState<Boolean>
-) {
-    ExpandedTopToolbar(modifier = Modifier.fillMaxWidth(), channelItem = channelItem)
-    CollapsedTopToolbar(modifier = Modifier.fillMaxWidth(), channelTitle = channelItem.title)
-    FollowSection(
-        isFollowed = channelItem.isFollowed,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-    )
-    ExpandedDescription(
-        expandedState = expandedState,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-            .padding(top = Dimens.m3),
-        description = channelItem.introduction
-    )
-    categoryList(
-        items = channelItem.categoryList,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-    )
-
-    AllEpisodeSection(
-        modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = Dimens.m4)
-            .background(Colors.black)
-    )
-}
-
-@Composable
-fun TopExpandedSection(
-    channelItem: ChannelItem,
-    expandedState: MutableState<Boolean>,
     scrollState: ScrollState,
-    modifier: Modifier = Modifier,
-    topHeightState: (Dp) -> Unit
+    topSectionHeightState: MutableState<Dp>
 ) {
-    Layout(
-        modifier = modifier,
-        children = {
-            TopExpandedContent(
-                channelItem = channelItem,
-                expandedState = expandedState
-            )
-        }
-    ) { measurables, constraints ->
-
-        val expandedTopBarIndex = 0
-        val collapsedTopBarIndex = 1
-        val followSectionIndex = 2
-        val descriptionIndex = 3
-        val categoryListIndex = 4
-        val allEpisodeTitleIndex = 5
-        val contentIndexList = listOf(expandedTopBarIndex, followSectionIndex, descriptionIndex, categoryListIndex)
-
-        val placeables = measurables.map { measurable ->
-            measurable.measure(constraints)
-        }
-        val totalHeight = placeables.filterIndexed { index, _ -> index != collapsedTopBarIndex }
-            .sumBy { it.height }
-
-        val topContentHeight =
-            totalHeight - placeables[collapsedTopBarIndex].height - placeables[allEpisodeTitleIndex].height
-        topHeightState(totalHeight.toDp())
-
-        layout(placeables[0].width, totalHeight) {
-            var offset = -scrollState.value.toInt()
-            contentIndexList.forEach { index ->
-                placeables[index].place(0, offset)
-                offset += placeables[index].height
-            }
-
-            // place allEpisodeTitle
-            if (scrollState.value > topContentHeight) {
-                placeables[allEpisodeTitleIndex].place(0, placeables[collapsedTopBarIndex].height)
-            } else {
-                placeables[allEpisodeTitleIndex].place(0, offset)
-            }
-
-            // place collapsedTopBarIndex
-            placeables[collapsedTopBarIndex].place(0, 0)
-        }
-
+    ScrollableColumn(
+        modifier = Modifier.fillMaxSize().background(Colors.black),
+        scrollState = scrollState
+    ) {
+        Spacer(modifier = Modifier.fillMaxWidth().height(topSectionHeightState.value))
+        EpisodeItemList(
+            channelName = channelItem.title,
+            episodeItemList = channelItem.episodeList,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
+                .padding(top = Dimens.m3)
+        )
     }
 }
 
@@ -251,30 +183,56 @@ fun TopExpandedSection(
 fun ChannelPage(channelItem: ChannelItem) {
     val scrollState: ScrollState = rememberScrollState()
     val expandedState = remember { mutableStateOf(false) }
-    val topSectionHeightState = remember { mutableStateOf(0.dp) }
+    val topSectionMaxHeightState = remember { mutableStateOf(0.dp) }
+    val topSectionCollapseFactorState = remember { mutableStateOf(0F) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        ScrollableColumn(
-            modifier = Modifier.fillMaxSize().background(Colors.black),
-            scrollState = scrollState
-        ) {
-            Spacer(modifier = Modifier.fillMaxWidth().height(topSectionHeightState.value))
-            EpisodeItemList(
-                channelName = channelItem.title,
-                episodeItemList = channelItem.episodeList,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                    .padding(top = Dimens.m3)
-            )
-        }
-
-        TopExpandedSection(
+        EpisodeListSection(
             channelItem = channelItem,
-            expandedState = expandedState,
             scrollState = scrollState,
-            modifier = Modifier.fillMaxWidth()
-        ) { topExpandedHeight ->
-            topSectionHeightState.value = topExpandedHeight
-        }
+            topSectionHeightState = topSectionMaxHeightState
+        )
+
+        CollapsingTopSection(
+            scrollState = scrollState,
+            modifier = Modifier.fillMaxWidth(),
+            topMaxHeightState = topSectionMaxHeightState,
+            topSectionCollapseFactor = topSectionCollapseFactorState,
+            topBarSectionSlot = {
+                ExpandedTopToolbar(modifier = Modifier.fillMaxWidth(), channelItem = channelItem)
+            },
+            centerSectionSlot = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    FollowSection(
+                        isFollowed = channelItem.isFollowed,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
+                    )
+                    ExpandedDescription(
+                        expandedState = expandedState,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
+                            .padding(top = Dimens.m3),
+                        description = channelItem.description
+                    )
+                    categoryList(
+                        items = channelItem.categoryList,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
+                    )
+                }
+            },
+            stickySectionSlot = {
+                AllEpisodeSection(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = Dimens.m4)
+                        .background(Colors.black)
+                )
+            }
+        )
+
+        CollapsedTopToolbar(
+            modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight),
+            channelTitle = channelItem.title,
+            collapseFactorState = topSectionCollapseFactorState
+        )
     }
 }
 
@@ -352,7 +310,6 @@ fun ExpandingTextPreview() {
         },
         collapsedContent = {
             Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
-
         }
     )
 }
@@ -365,7 +322,7 @@ fun ChannelPagePreview() {
             imageUrl = "https://picsum.photos/300/300",
             title = "Channel title",
             subtitle = "Author",
-            introduction = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction",
+            description = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction",
             isFollowed = true,
             isExpanded = true,
             categoryList = listOf(CategoryItem("Comedy", ""), CategoryItem("Knowledge", "")),
