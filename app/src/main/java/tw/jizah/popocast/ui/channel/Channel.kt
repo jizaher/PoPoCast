@@ -213,7 +213,7 @@ fun ChannelPage(channelItem: ChannelItem) {
                             .padding(top = Dimens.m3),
                         description = channelItem.description
                     )
-                    categoryList(
+                    CategoryList(
                         items = channelItem.categoryList,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
                     )
@@ -250,7 +250,7 @@ private fun ExpandedDescription(
                 text = description,
                 color = Colors.gray400
             )
-            CenterRow {
+            CenterRow(modifier = Modifier.clickable(onClick = { expandedState.value = false }))  {
                 Text(
                     text = stringResource(id = R.string.see_less),
                     color = Colors.white,
@@ -267,7 +267,7 @@ private fun ExpandedDescription(
                 maxLines = 2,
                 color = Colors.gray400
             )
-            CenterRow {
+            CenterRow(modifier = Modifier.clickable(onClick = { expandedState.value = true })) {
                 Text(
                     text = stringResource(id = R.string.see_more),
                     color = Colors.white,
@@ -283,7 +283,7 @@ private fun ExpandedDescription(
 }
 
 @Composable
-private fun categoryList(modifier: Modifier, items: List<CategoryItem>) {
+private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
     LazyRowFor(items = items, modifier = modifier.fillMaxWidth()) { item ->
         OutlinedButton(
             shape = RoundedCornerShape(50F),
