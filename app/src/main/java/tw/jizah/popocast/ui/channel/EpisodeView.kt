@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,11 +22,11 @@ import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.EpisodeItem
+import tw.jizah.popocast.ui.episode.formatDuration
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
+import tw.jizah.popocast.utils.DateTimeUtils
 import tw.jizah.popocast.widget.EllipsisText
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun AllEpisodeSection(modifier: Modifier = Modifier) {
@@ -66,19 +67,18 @@ fun EpisodeItemList(
     episodeItemList: List<EpisodeItem>,
     modifier: Modifier = Modifier,
 ) {
-    // todo: [Amy] logic for player info
-    val playerInfo = "昨天"
-
     Column(modifier.fillMaxWidth()) {
-        episodeItemList.forEach {
-                item ->
+        episodeItemList.forEach { item ->
+            val dateStr = DateTimeUtils.getDateString(ContextAmbient.current, item.releaseTime)
+            val durationStr = formatDuration(item.duration)
+
             EpisodeItemView(
                 modifier = Modifier.fillMaxWidth(),
                 imageUrl = item.imageUrl,
                 title = item.itemName,
                 subTitle = channelName,
                 itemInfo = item.itemInfo,
-                playerInfo = playerInfo,
+                playerInfo = "$dateStr．$durationStr",
                 isPlaying = false,
                 progress = 0.2F
             )
@@ -229,11 +229,8 @@ fun previewItemList() {
                 imageUrl = "https://picsum.photos/300/300",
                 itemName = "This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index",
                 itemInfo = "This is item info This is item info This is item info This is item info This is item info This is item info",
-                releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
-                    (index + 1).toLong(),
-                    TimeUnit.DAYS
-                ),
-                duration = 0L,
+                releaseTime = System.currentTimeMillis(),
+                duration = 200000L,
                 description = ""
             )
         }

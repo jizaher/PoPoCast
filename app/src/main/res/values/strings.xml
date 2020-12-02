@@ -26,4 +26,7 @@
     <string name="podcast_pause">PAUSE</string>
     <string name="podcast_played">PLAYED</string>
     <string name="see_all_episodes">See all episodes</string>
+
+    <string name="today">TODAY</string>
+    <string name="yesterday">YESTERDAY</string>
 </resources>
