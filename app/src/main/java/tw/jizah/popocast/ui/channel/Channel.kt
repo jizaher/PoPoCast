@@ -31,10 +31,7 @@ import tw.jizah.popocast.model.ChannelItem
 import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
-import tw.jizah.popocast.widget.CenterRow
-import tw.jizah.popocast.widget.CollapsingTopSection
-import tw.jizah.popocast.widget.EllipsisText
-import tw.jizah.popocast.widget.ExpandableWidget
+import tw.jizah.popocast.widget.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -207,11 +204,12 @@ fun ChannelPage(channelItem: ChannelItem) {
                         isFollowed = channelItem.isFollowed,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
                     )
-                    ExpandedDescription(
+                    ExpandableText(
+                        text = channelItem.description,
+                        maxLines = 2,
                         expandedState = expandedState,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                            .padding(top = Dimens.m3),
-                        description = channelItem.description
+                            .padding(top = Dimens.m3)
                     )
                     CategoryList(
                         items = channelItem.categoryList,
@@ -237,57 +235,6 @@ fun ChannelPage(channelItem: ChannelItem) {
 }
 
 @Composable
-private fun ExpandedDescription(
-    expandedState: MutableState<Boolean>,
-    modifier: Modifier,
-    description: String
-) {
-
-    fun toggleDescription() {
-        expandedState.value = !expandedState.value
-    }
-
-    ExpandableWidget(
-        modifier = modifier,
-        expandedState = expandedState,
-        expandedContent = {
-            Text(
-                text = description,
-                color = Colors.gray400
-            )
-            CenterRow(modifier = Modifier.clickable(onClick = { toggleDescription() }))  {
-                Text(
-                    text = stringResource(id = R.string.see_less),
-                    color = Colors.white,
-                    fontWeight = FontWeight.Bold
-                )
-                IconButton(onClick = { toggleDescription() }) {
-                    Icon(Icons.Default.ExpandLess, tint = Colors.white)
-                }
-            }
-        },
-        collapsedContent = {
-            EllipsisText(
-                text = description,
-                maxLines = 2,
-                color = Colors.gray400
-            )
-            CenterRow(modifier = Modifier.clickable(onClick = { toggleDescription() })) {
-                Text(
-                    text = stringResource(id = R.string.see_more),
-                    color = Colors.white,
-                    fontWeight = FontWeight.Bold
-                )
-                IconButton(
-                    onClick = { toggleDescription() }) {
-                    Icon(Icons.Default.ExpandMore, tint = Colors.white)
-                }
-            }
-        }
-    )
-}
-
-@Composable
 private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
     LazyRowFor(items = items, modifier = modifier.fillMaxWidth()) { item ->
         OutlinedButton(
@@ -306,18 +253,18 @@ private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
     }
 }
 
-@Preview
-@Composable
-fun ExpandingTextPreview() {
-    ExpandableWidget(
-        expandedContent = {
-            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
-        },
-        collapsedContent = {
-            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
-        }
-    )
-}
+//@Preview
+//@Composable
+//fun ExpandingTextPreview() {
+//    ExpandableWidget(
+//        expandedContent = {
+//            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
+//        },
+//        collapsedContent = {
+//            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
+//        }
+//    )
+//}
 
 @Preview
 @Composable
