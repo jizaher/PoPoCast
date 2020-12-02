@@ -22,9 +22,9 @@ object DateTimeUtils {
                 )
                 val isThisYear = (todayLocalDate.year == releaseLocalDate.year)
                 if (isThisYear) {
-                    "$month ${releaseLocalDate.dayOfMonth}"
+                    context.getString(R.string.date_without_year, month, releaseLocalDate.dayOfMonth)
                 } else {
-                    "$month ${releaseLocalDate.dayOfMonth}, ${releaseLocalDate.year}"
+                    context.getString(R.string.date_with_year, month, releaseLocalDate.dayOfMonth, releaseLocalDate.year)
                 }
             }
             yesterdayLocalDate.getMilliSecond() > millisecond -> {

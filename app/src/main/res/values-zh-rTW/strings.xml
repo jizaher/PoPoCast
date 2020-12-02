@@ -30,4 +30,7 @@
 
     <string name="today">今天</string>
     <string name="yesterday">昨天</string>
+
+    <string name="date_without_year">%1$s%2$d日</string>
+    <string name="date_with_year">%3$d年%1$s%2$d日</string>
 </resources>
