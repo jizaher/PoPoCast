@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PoPoCast</string>
+    <string name="search">搜尋</string>
+    <string name="recent_searches">最近的搜尋</string>
+    <string name="clear_recent_searches">清除最近的搜尋紀錄</string>
     <string name="all_episodes">所有章節</string>
     <string name="not_yet_followed">尚未關注</string>
     <string name="followed">正在關注</string>
     <string name="see_more">查看更多</string>
     <string name="see_less">顯示更少</string>
     <string name="sort">排序</string>
-    <string name="search">搜尋</string>
-    <string name="recent_searches">最近的搜尋</string>
-    <string name="clear_recent_searches">清除最近的搜尋紀錄</string>
     <string name="podcasts">播客</string>
 
     <plurals name="time_unit_hour">
@@ -27,4 +27,10 @@
     <string name="podcast_pause">暫停</string>
     <string name="podcast_played">已播放</string>
     <string name="see_all_episodes">查看所有集數</string>
+
+    <string name="today">今天</string>
+    <string name="yesterday">昨天</string>
+
+    <string name="date_without_year">%1$s%2$d日</string>
+    <string name="date_with_year">%3$d年%1$s%2$d日</string>
 </resources>
