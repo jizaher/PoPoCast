@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -19,6 +20,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,18 +67,43 @@ fun SearchPage() {
 fun SearchContent() {
     Column {
         val isSearching = remember { mutableStateOf(false) }
+        val keyword = remember { mutableStateOf("") }
         val transitionState = transition(
             definition = searchTransitionDef,
             initState = isSearching.value,
             toState = isSearching.value
         )
-        SearchBar(isSearching, transitionState)
-        RecentSearchTitle()
-        RecentSearchList(getSearchItems()) {
-            // TODO: Ivan
+        SearchBar(isSearching, transitionState, keyword)
+        if (keyword.value.isNotEmpty()) {
+            SearchKeywordList()
+        } else {
+            RecentSearchList()
         }
-        ClearRecentSearches {
+    }
+}
+
+@Composable
+private fun SearchKeywordList() {
+    LazyColumnFor(items = getSearchResults()) {
+        RecentSearchRow(item = it, onClick = {
             // TODO: Ivan
+        })
+    }
+}
+
+@Composable
+fun RecentSearchList() {
+    LazyColumn {
+        item { RecentSearchTitle() }
+        items(getSearchItems()) {
+            RecentSearchRow(item = it, onClick = {
+                // TODO: Ivan
+            })
+        }
+        item {
+            ClearRecentSearches {
+                // TODO: Ivan
+            }
         }
     }
 }
@@ -111,7 +138,11 @@ private val searchTransitionDef = transitionDefinition<Boolean> {
 
 @ExperimentalFocus
 @Composable
-fun SearchBar(isSearchingState: MutableState<Boolean>, transitionState: TransitionState) {
+fun SearchBar(
+    isSearchingState: MutableState<Boolean>,
+    transitionState: TransitionState,
+    keyword: MutableState<String>
+) {
     Box {
         Box(
             modifier = Modifier
@@ -149,7 +180,7 @@ fun SearchBar(isSearchingState: MutableState<Boolean>, transitionState: Transiti
                 )
             }
             if (isSearchingState.value) {
-                SearchTextField()
+                SearchTextField(keyword)
             }
         }
     }
@@ -157,14 +188,13 @@ fun SearchBar(isSearchingState: MutableState<Boolean>, transitionState: Transiti
 
 @ExperimentalFocus
 @Composable
-fun SearchTextField() {
+fun SearchTextField(keyword: MutableState<String>) {
     val focusRequester = FocusRequester()
-    val textState = remember { mutableStateOf("") }
     val keyboardController: Ref<SoftwareKeyboardController> = remember { Ref() }
     BasicTextField(
-        value = textState.value,
+        value = keyword.value,
         textStyle = TextStyle.Default.copy(color = Colors.white),
-        onValueChange = { textState.value = it },
+        onValueChange = { keyword.value = it },
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Search,
             keyboardType = KeyboardType.Text
@@ -192,13 +222,6 @@ fun RecentSearchTitle() {
             color = Colors.white,
             style = MaterialTheme.typography.h6
         )
-    }
-}
-
-@Composable
-fun RecentSearchList(list: List<SearchItem>, onClick: (SearchItem) -> Unit) {
-    LazyColumnFor(items = list) {
-        RecentSearchRow(item = it, onClick = onClick)
     }
 }
 
@@ -266,9 +289,10 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
                     end.linkTo(parent.end, Dimens.m3)
                 }
         ) {
+            val asset = if (item.hasOptions) Icons.Filled.MoreVert else Icons.Filled.Close
             Icon(
-                asset = Icons.Filled.Close,
-                tint = Colors.white
+                asset = asset,
+                tint = Colors.gray600
             )
         }
     }
@@ -295,18 +319,44 @@ private fun getSearchItems(): List<SearchItem> {
         SearchItem(
             cover = "https://upload.wikimedia.org/wikipedia/en/4/4b/The_Joe_Rogan_Experience_logo.jpg",
             title = "The Joe Rogan Experience",
-            subtitle = "Podcast"
+            subtitle = "Podcast",
+            hasOptions = false
         ),
         SearchItem(
             cover = "https://upload.wikimedia.org/wikipedia/en/2/29/On_the_Media_%28logo%29.png",
             title = "On The Media",
-            subtitle = "Podcast"
+            subtitle = "Podcast",
+            hasOptions = false
         ),
         SearchItem(
             cover = "https://vignette.wikia.nocookie.net/whm/images/8/83/Whm_2019_logo.png/revision/latest?cb=20190825181343",
             title = "We Hate Movies",
-            subtitle = "Podcast"
+            subtitle = "Podcast",
+            hasOptions = false
         )
+    )
+}
+
+private fun getSearchResults(): List<SearchItem> {
+    return listOf(
+        SearchItem(
+            cover = "https://vignette.wikia.nocookie.net/whm/images/8/83/Whm_2019_logo.png/revision/latest?cb=20190825181343",
+            title = "We Hate Movies",
+            subtitle = "Podcast",
+            hasOptions = true
+        ),
+        SearchItem(
+            cover = "https://upload.wikimedia.org/wikipedia/en/2/29/On_the_Media_%28logo%29.png",
+            title = "On The Media",
+            subtitle = "Podcast",
+            hasOptions = true
+        ),
+        SearchItem(
+            cover = "https://upload.wikimedia.org/wikipedia/en/4/4b/The_Joe_Rogan_Experience_logo.jpg",
+            title = "The Joe Rogan Experience",
+            subtitle = "Podcast",
+            hasOptions = true
+        ),
     )
 }
 
