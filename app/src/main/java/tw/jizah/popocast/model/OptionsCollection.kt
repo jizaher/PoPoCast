@@ -1,6 +1,6 @@
 package tw.jizah.popocast.model
 
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 
 data class OptionsCollection(
     val image: String,
@@ -10,6 +10,6 @@ data class OptionsCollection(
 )
 
 data class OptionItem(
-    val icon: VectorAsset,
+    val icon: ImageVector,
     val name: String
 )

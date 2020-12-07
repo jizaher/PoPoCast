@@ -20,15 +20,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawShadow
-import androidx.compose.ui.drawLayer
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.CategoryCollection
@@ -75,7 +75,7 @@ fun SearchSection(state: LazyListState, searchSectionHeight: MutableState<Dp>) {
             .fillMaxWidth()
             .background(color = Colors.black)
             .padding(Dimens.m3),
-        children = { SearchSectionContent() }
+        content = { SearchSectionContent() }
     ) { measurables, constraints ->
         val textPlaceable = measurables[0].measure(constraints)
         val searchBarPlaceable = measurables[1].measure(constraints)
@@ -117,7 +117,7 @@ fun SearchSectionContent() {
             .fillMaxWidth()
             .padding(Dimens.m3)
     ) {
-        Icon(asset = Icons.Filled.Search, tint = Colors.gray700)
+        Icon(imageVector = Icons.Filled.Search, tint = Colors.gray700)
         Text(
             text = stringResource(id = R.string.podcasts),
             color = Colors.gray700,
@@ -168,7 +168,7 @@ private fun SearchCategory(category: CategoryItem, modifier: Modifier = Modifier
             .clickable(onClick = {
                 // TODO: Ivan
             }),
-        children = { SearchCategoryContent(category) }
+        content = { SearchCategoryContent(category) }
     ) { measurables, constraints ->
         val textWidth = (constraints.maxWidth * categoryTextRatio).toInt()
         val textPlaceable = measurables[0].measure(Constraints.fixedWidth(textWidth))
@@ -202,8 +202,8 @@ private fun SearchCategoryContent(category: CategoryItem) {
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .fillMaxSize()
-            .drawLayer(rotationZ = rotationZ)
-            .drawShadow(Dimens.m1)
+            .graphicsLayer(rotationZ = rotationZ)
+            .shadow(Dimens.m1)
     )
 }
 

@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.model.OptionItem
 import tw.jizah.popocast.model.OptionsCollection
@@ -69,7 +69,7 @@ private fun OptionItem(item: OptionItem, onItemClicked: (OptionItem) -> Unit) {
         modifier = Modifier.fillMaxWidth().clickable(onClick = { onItemClicked(item) }),
     ) {
         Icon(
-            asset = item.icon,
+            imageVector = item.icon,
             tint = Colors.gray600,
             modifier = Modifier.padding(Dimens.m4).preferredSize(Dimens.m8)
         )

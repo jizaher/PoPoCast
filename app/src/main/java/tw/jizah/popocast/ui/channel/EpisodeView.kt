@@ -14,11 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.EpisodeItem
@@ -69,7 +69,7 @@ fun EpisodeItemList(
 ) {
     Column(modifier.fillMaxWidth()) {
         episodeItemList.forEach { item ->
-            val dateStr = DateTimeUtils.getDateString(ContextAmbient.current, item.releaseTime)
+            val dateStr = DateTimeUtils.getDateString(AmbientContext.current, item.releaseTime)
             val durationStr = formatDuration(item.duration)
 
             EpisodeItemView(
@@ -96,7 +96,7 @@ fun EpisodeItemView(
     playerInfo: String,
     isPlaying: Boolean,
     progress: Float,
-    modifier: Modifier = Modifier.fillMaxWidth()
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
@@ -149,9 +149,9 @@ fun EpisodeItemView(
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                 },
-                icon = {
+                content = {
                     Icon(
-                        asset = Icons.Default.MoreVert,
+                        imageVector = Icons.Default.MoreVert,
                         tint = Colors.gray400
                     )
                 },
@@ -170,7 +170,7 @@ fun EpisodeItemView(
             )
 
             Box(
-                alignment = Alignment.Center,
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .preferredSize(Dimens.m9)
                     .clip(CircleShape)
