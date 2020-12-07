@@ -7,7 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,9 +60,6 @@ fun EpisodeDetail(
                 onClickPlay = viewModel::togglePlayOrPause,
                 isItemAdded = isItemAddedState.value,
                 downloadState = downloadState.value,
-                onClickDownload = {
-                    downloadState.value += 20
-                },
                 modifier = Modifier.fillMaxWidth()
             )
             EpisodeBody(episode = episode, expandedState = expandedState, modifier = Modifier.fillMaxWidth())
@@ -271,8 +268,8 @@ private fun DownloadButton(
 ) {
     // TODO: [Zoey] display download progress icon
     val (asset, tint) = when (downloadState) {
-        0 -> Icons.Outlined.CloudDownload to iconTint
-        else -> Icons.Filled.CloudDone to iconHighlightTInt
+        0 -> Icons.Outlined.ArrowCircleDown to iconTint
+        else -> Icons.Filled.ArrowCircleDown to iconHighlightTInt
     }
     IconButton(onClick = onClick, modifier = modifier) {
         Icon(asset = asset, tint = tint)
