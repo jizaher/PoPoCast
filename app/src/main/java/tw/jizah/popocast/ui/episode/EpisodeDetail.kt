@@ -6,20 +6,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.NavigateNext
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toDateTimePeriod
@@ -28,6 +26,7 @@ import tw.jizah.popocast.R
 import tw.jizah.popocast.model.ChannelItem
 import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.model.PlayState
+import tw.jizah.popocast.ui.player.PlayerViewModel
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.utils.quantityStringResource
@@ -37,20 +36,35 @@ import kotlin.time.milliseconds
 
 private const val MILLISECONDS_PER_MINUTES = 60000
 private val iconTint = Colors.white
+private val iconHighlightTInt = Colors.greenA700
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun EpisodeDetail(
     channel: ChannelItem,
     episode: EpisodeItem,
     playState: PlayState
 ) {
+    val viewModel: PlayerViewModel = viewModel(modelClass = PlayerViewModel::class.java)
+    val isPlayingState by viewModel.isPlaying.collectAsState()
     val expandedState: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val isItemAddedState: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val downloadState: MutableState<Int> = remember { mutableStateOf(0) }
 
     Surface(Modifier.fillMaxSize()) {
         ScrollableColumn(modifier = Modifier.fillMaxSize()) {
             EpisodeAppBar(Modifier.fillMaxWidth())
             EpisodeHeader(channel = channel, episode = episode, playState = playState, modifier = Modifier.fillMaxWidth())
-            EpisodeButtonBar(modifier = Modifier.fillMaxWidth())
+            EpisodeButtonBar(
+                isPlaying = isPlayingState,
+                onClickPlay = viewModel::togglePlayOrPause,
+                isItemAdded = isItemAddedState.value,
+                downloadState = downloadState.value,
+                onClickDownload = {
+                    downloadState.value += 20
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
             EpisodeBody(episode = episode, expandedState = expandedState, modifier = Modifier.fillMaxWidth())
             SeeAllEpisodes(modifier = Modifier.fillMaxWidth())
         }
@@ -170,7 +184,7 @@ private fun EpisodeProgressBar(
     Row(modifier = modifier.clip(RoundedCornerShape(percent = 50))) {
         LinearProgressIndicator(
             progress = animatedProgress,
-            color = Colors.greenA700,
+            color = iconHighlightTInt,
             backgroundColor = Colors.gray100.copy(alpha = 0.1F)
         )
     }
@@ -178,10 +192,90 @@ private fun EpisodeProgressBar(
 
 @Composable
 private fun EpisodeButtonBar(
+    isPlaying: Boolean,
+    onClickPlay: () -> Unit = {},
+    onClickShare: () -> Unit = {},
+    isItemAdded: Boolean,
+    onClickAdd: () -> Unit = {},
+    downloadState: Int,
+    onClickDownload: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.padding(Dimens.m3)) {
-        PlayButton(isPlaying = false, modifier = Modifier.wrapContentSize())
+
+    ConstraintLayout(modifier = modifier) {
+        val (playBtn, shareBtn, addBtn, downloadBtn) = createRefs()
+        PlayButton(
+            isPlaying = isPlaying,
+            onClick = onClickPlay,
+            modifier = Modifier.constrainAs(playBtn) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+        )
+        IconButton(
+            onClick = onClickShare,
+            modifier = Modifier.constrainAs(shareBtn) {
+                end.linkTo(addBtn.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+        ) {
+            Icon(asset = Icons.Filled.Share, tint = iconTint)
+        }
+        AddToPlaylistButton(
+            isAdded = isItemAdded,
+            onClick = onClickAdd,
+            modifier = Modifier.constrainAs(addBtn) {
+                end.linkTo(downloadBtn.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+        )
+        DownloadButton(
+            downloadState = downloadState,
+            onClick = onClickDownload,
+            modifier = Modifier.constrainAs(downloadBtn) {
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+        )
+    }
+}
+
+@Composable
+private fun AddToPlaylistButton(
+    isAdded: Boolean,
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val (asset, tint) = if (isAdded) {
+        Icons.Filled.CheckCircle to iconHighlightTInt
+    } else {
+        Icons.Filled.AddCircleOutline to iconTint
+    }
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(asset = asset, tint = tint)
+    }
+}
+
+@Composable
+private fun DownloadButton(
+    downloadState: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // TODO: [Zoey] display download progress icon
+    val (asset, tint) = when (downloadState) {
+        0 -> Icons.Outlined.CloudDownload to iconTint
+        else -> Icons.Filled.CloudDone to iconHighlightTInt
+    }
+    IconButton(onClick = onClick, modifier = modifier) {
+        Icon(asset = asset, tint = tint)
     }
 }
 
@@ -193,7 +287,7 @@ private fun PlayButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonConstants.defaultButtonColors(backgroundColor = Colors.greenA700),
+        colors = ButtonConstants.defaultButtonColors(backgroundColor = iconHighlightTInt),
         modifier = modifier.defaultMinSizeConstraints(minWidth = Dimens.episodePlayButtonMinWidth, minHeight = Dimens.episodePlayButtonMinHeight)
     ) {
         val text = if (isPlaying) {
