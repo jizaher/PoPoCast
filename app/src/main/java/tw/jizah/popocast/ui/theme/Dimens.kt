@@ -25,6 +25,8 @@ object Dimens {
     val episodeListCoverSize = 80.dp
     val channelCoverSize = 120.dp
 
+    val optionPopupImageSize = 150.dp
+
     val episodeCoverSize = 56.dp
     val episodePlayButtonMinWidth = 160.dp
     val episodePlayButtonMinHeight = 52.dp
