@@ -24,7 +24,7 @@ fun CollapsingTopSection(
 ) {
     Layout(
         modifier = modifier,
-        children = {
+        content = {
             topBarSectionSlot()
             centerSectionSlot()
             stickySectionSlot()

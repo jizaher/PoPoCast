@@ -64,22 +64,22 @@ private fun EpisodeAppBar(
     ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
         val (backButton, moreButton) = createRefs()
         Icon(
-            asset = Icons.Filled.ArrowBack,
+            imageVector = Icons.Filled.ArrowBack,
             tint = iconTint,
             modifier = Modifier.constrainAs(backButton) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
-            }
+            },
         )
         Icon(
-            asset = Icons.Filled.MoreVert,
+            imageVector = Icons.Filled.MoreVert,
             tint = iconTint,
             modifier = Modifier.constrainAs(moreButton) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 end.linkTo(parent.end)
-            }
+            },
         )
     }
 }
@@ -187,9 +187,9 @@ private fun EpisodeButtonBar(
 
 @Composable
 private fun PlayButton(
+    modifier: Modifier = Modifier,
     isPlaying: Boolean,
     onClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Button(
         onClick = onClick,
@@ -236,7 +236,7 @@ private fun SeeAllEpisodes(
                 start.linkTo(parent.start)
             }
         )
-        Icon(asset = Icons.Filled.NavigateNext, tint = iconTint, modifier = Modifier.constrainAs(naviIcon) {
+        Icon(imageVector = Icons.Filled.NavigateNext, tint = iconTint, modifier = Modifier.constrainAs(naviIcon) {
             top.linkTo(parent.top)
             bottom.linkTo(parent.bottom)
             end.linkTo(parent.end)

@@ -14,6 +14,6 @@ fun CenterRow(modifier: Modifier = Modifier, content: @Composable RowScope.() ->
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth(),
-        children = content
+        content = content
     )
 }

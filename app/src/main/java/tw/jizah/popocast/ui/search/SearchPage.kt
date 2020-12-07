@@ -38,8 +38,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.SearchItem
@@ -175,7 +175,7 @@ fun SearchBar(
                 modifier = Modifier.drawOpacity(transitionState[visibilityProp])
             ) {
                 Icon(
-                    asset = Icons.Filled.ArrowBack,
+                    imageVector = Icons.Filled.ArrowBack,
                     tint = Colors.white
                 )
             }
@@ -247,7 +247,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
                 .preferredSize(Dimens.searchItemImageSize)
                 .clip(shape = RoundedCornerShape(Dimens.m1)),
             error = {
-                Image(asset = imageResource(id = R.mipmap.ic_launcher))
+                Image(bitmap = imageResource(id = R.mipmap.ic_launcher))
             }
         )
         EllipsisText(
@@ -291,7 +291,7 @@ fun RecentSearchRow(item: SearchItem, onClick: (SearchItem) -> Unit) {
         ) {
             val asset = if (item.hasOptions) Icons.Filled.MoreVert else Icons.Filled.Close
             Icon(
-                asset = asset,
+                imageVector = asset,
                 tint = Colors.gray600
             )
         }
