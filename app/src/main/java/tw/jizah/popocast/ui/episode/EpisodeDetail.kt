@@ -190,13 +190,13 @@ private fun EpisodeProgressBar(
 @Composable
 private fun EpisodeButtonBar(
     isPlaying: Boolean,
+    modifier: Modifier = Modifier,
     onClickPlay: () -> Unit = {},
     onClickShare: () -> Unit = {},
     isItemAdded: Boolean,
     onClickAdd: () -> Unit = {},
     downloadState: Int,
     onClickDownload: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
 
     ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
@@ -218,7 +218,7 @@ private fun EpisodeButtonBar(
                 bottom.linkTo(parent.bottom)
             }
         ) {
-            Icon(asset = Icons.Filled.Share, tint = iconTint)
+            Icon(imageVector = Icons.Filled.Share, tint = iconTint)
         }
         AddToPlaylistButton(
             isAdded = isItemAdded,
@@ -243,9 +243,9 @@ private fun EpisodeButtonBar(
 
 @Composable
 private fun AddToPlaylistButton(
+    modifier: Modifier = Modifier,
     isAdded: Boolean,
-    onClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onClick: () -> Unit = {}
 ) {
     val (asset, tint) = if (isAdded) {
         Icons.Filled.CheckCircle to iconHighlightTint
@@ -256,7 +256,7 @@ private fun AddToPlaylistButton(
         onClick = onClick,
         modifier = modifier
     ) {
-        Icon(asset = asset, tint = tint)
+        Icon(imageVector = asset, tint = tint)
     }
 }
 
@@ -272,7 +272,7 @@ private fun DownloadButton(
         else -> Icons.Filled.ArrowCircleDown to iconHighlightTint
     }
     IconButton(onClick = onClick, modifier = modifier) {
-        Icon(asset = asset, tint = tint)
+        Icon(imageVector = asset, tint = tint)
     }
 }
 
