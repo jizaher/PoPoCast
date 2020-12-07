@@ -36,7 +36,7 @@ import kotlin.time.milliseconds
 
 private const val MILLISECONDS_PER_MINUTES = 60000
 private val iconTint = Colors.white
-private val iconHighlightTInt = Colors.greenA700
+private val iconHighlightTint = Colors.greenA700
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
@@ -181,7 +181,7 @@ private fun EpisodeProgressBar(
     Row(modifier = modifier.clip(RoundedCornerShape(percent = 50))) {
         LinearProgressIndicator(
             progress = animatedProgress,
-            color = iconHighlightTInt,
+            color = iconHighlightTint,
             backgroundColor = Colors.gray100.copy(alpha = 0.1F)
         )
     }
@@ -199,7 +199,7 @@ private fun EpisodeButtonBar(
     modifier: Modifier = Modifier
 ) {
 
-    ConstraintLayout(modifier = modifier) {
+    ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
         val (playBtn, shareBtn, addBtn, downloadBtn) = createRefs()
         PlayButton(
             isPlaying = isPlaying,
@@ -248,7 +248,7 @@ private fun AddToPlaylistButton(
     modifier: Modifier = Modifier
 ) {
     val (asset, tint) = if (isAdded) {
-        Icons.Filled.CheckCircle to iconHighlightTInt
+        Icons.Filled.CheckCircle to iconHighlightTint
     } else {
         Icons.Filled.AddCircleOutline to iconTint
     }
@@ -269,7 +269,7 @@ private fun DownloadButton(
     // TODO: [Zoey] display download progress icon
     val (asset, tint) = when (downloadState) {
         0 -> Icons.Outlined.ArrowCircleDown to iconTint
-        else -> Icons.Filled.ArrowCircleDown to iconHighlightTInt
+        else -> Icons.Filled.ArrowCircleDown to iconHighlightTint
     }
     IconButton(onClick = onClick, modifier = modifier) {
         Icon(asset = asset, tint = tint)
@@ -284,7 +284,7 @@ private fun PlayButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonConstants.defaultButtonColors(backgroundColor = iconHighlightTInt),
+        colors = ButtonConstants.defaultButtonColors(backgroundColor = iconHighlightTint),
         modifier = modifier.defaultMinSizeConstraints(minWidth = Dimens.episodePlayButtonMinWidth, minHeight = Dimens.episodePlayButtonMinHeight)
     ) {
         val text = if (isPlaying) {
