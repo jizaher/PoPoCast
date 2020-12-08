@@ -30,31 +30,20 @@ import tw.jizah.popocast.widget.EllipsisText
 
 @Composable
 fun AllEpisodeSection(modifier: Modifier = Modifier) {
-    ConstraintLayout(modifier = modifier) {
-        val (headerId, sortBtnId) = createRefs()
-
+    Row(horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier)
+    {
         EllipsisText(text = stringResource(id = R.string.all_episodes),
             style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.Bold,
-            color = Colors.white,
-            modifier = Modifier
-                .constrainAs(headerId) {
-                    start.linkTo(parent.start)
-                    end.linkTo(sortBtnId.start)
-                    top.linkTo(parent.top, Dimens.m2)
-                    width = Dimension.fillToConstraints
-                })
+            color = Colors.white)
 
         Button(onClick = { /* todo: [Amy] click event */ },
             colors = ButtonConstants.defaultButtonColors(
                 backgroundColor = Colors.gray800
             ),
             modifier = Modifier.padding(vertical = Dimens.m2)
-                .constrainAs(sortBtnId) {
-                end.linkTo(parent.end)
-                top.linkTo(headerId.top)
-                bottom.linkTo(headerId.bottom)
-            }
         ) {
             Text(text = stringResource(id = R.string.sort), color = Colors.gray400)
         }

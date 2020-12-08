@@ -3,7 +3,10 @@ package tw.jizah.popocast.ui.channel
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRowFor
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.Icon
@@ -14,73 +17,68 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.CategoryItem
 import tw.jizah.popocast.model.ChannelItem
 import tw.jizah.popocast.model.EpisodeItem
+import tw.jizah.popocast.ui.episode.formatDuration
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
+import tw.jizah.popocast.utils.DateTimeUtils
 import tw.jizah.popocast.widget.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@Composable
-private fun ExpandedTopToolbar(modifier: Modifier, channelItem: ChannelItem) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Spacer(modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight))
-        CoverTitleSection(
-            channelItem = channelItem,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                .padding(bottom = Dimens.m3)
-        )
-    }
-}
+private val coverSectionHeight = Dimens.channelCoverSize + Dimens.m3 * 2
+private val followSectionHeight = 56.dp
+private val categorySectionHeight = 56.dp
+private val allEpisodeTitleSectionHeight = 56.dp
+private val categoryItemIndex = 3
 
 @Composable
 private fun CollapsedTopToolbar(
     modifier: Modifier,
     channelTitle: String,
-    collapseFactorState: MutableState<Float>
+    lazyListState: LazyListState
 ) {
-    ConstraintLayout(
-        modifier = modifier.fillMaxWidth()
-            .background(Colors.black.copy(alpha = collapseFactorState.value))
-    ) {
-        val (iconId, titleId) = createRefs()
-        IconButton(onClick = {/* todo: [Amy] click event */ },
-            modifier = Modifier.constrainAs(iconId) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                tint = Colors.white
-            )
-        }
+    val alpha = if (lazyListState.firstVisibleItemIndex == 0) {
+        val offsetDp = with(AmbientDensity.current){ lazyListState.firstVisibleItemScrollOffset.toDp() }
+        (offsetDp / coverSectionHeight).coerceIn(0F, 1F)
+    } else {
+        1F
+    }
 
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.alpha(alpha).background(Colors.black)
+    ) {
         Text(
-            modifier = Modifier.constrainAs(titleId) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(iconId.top)
-                bottom.linkTo(iconId.bottom)
-                width = Dimension.fillToConstraints
-            },
             textAlign = TextAlign.Center,
             text = channelTitle,
             fontWeight = FontWeight.Bold,
-            color = Colors.white.copy(alpha = collapseFactorState.value),
+            color = Colors.white,
             style = MaterialTheme.typography.h6
+        )
+    }
+
+    IconButton(
+        onClick = {/* todo: [Amy] click event */ },
+        modifier = Modifier.height(Dimens.toolBarHeight)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            tint = Colors.white
         )
     }
 }
@@ -120,7 +118,7 @@ private fun CoverTitleSection(channelItem: ChannelItem, modifier: Modifier) {
 @Composable
 private fun FollowSection(isFollowed: Boolean, modifier: Modifier) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().height(followSectionHeight),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -157,84 +155,104 @@ private fun FollowSection(isFollowed: Boolean, modifier: Modifier) {
 @Composable
 private fun EpisodeListSection(
     channelItem: ChannelItem,
-    scrollState: ScrollState,
-    topSectionHeightState: MutableState<Dp>
+    lazyListState: LazyListState,
+    expandedState: MutableState<Boolean>,
 ) {
-    ScrollableColumn(
-        modifier = Modifier.fillMaxSize().background(Colors.black),
-        scrollState = scrollState
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().background(Colors.black).padding(horizontal = Dimens.m4),
+        state = lazyListState
     ) {
-        Spacer(modifier = Modifier.fillMaxWidth().height(topSectionHeightState.value))
-        EpisodeItemList(
-            channelName = channelItem.title,
-            episodeItemList = channelItem.episodeList,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                .padding(top = Dimens.m3)
-        )
+        item {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight))
+                CoverTitleSection(
+                    channelItem = channelItem,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.m3)
+                )
+            }
+        }
+        item {
+            FollowSection(
+                isFollowed = channelItem.isFollowed,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item {
+            ExpandableText(text = channelItem.description, maxLines = 2, expandedState = expandedState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Dimens.m1))
+        }
+
+        item {
+            CategoryList(
+                items = channelItem.categoryList,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            AllEpisodeSection(
+                modifier = Modifier.fillMaxWidth().height(allEpisodeTitleSectionHeight)
+                    .background(Colors.black)
+            )
+        }
+
+        items(channelItem.episodeList) { item ->
+            val dateStr = DateTimeUtils.getDateString(AmbientContext.current, item.releaseTime)
+            val durationStr = formatDuration(item.duration)
+            Column {
+                EpisodeItemView(
+                    modifier = Modifier.fillMaxWidth(),
+                    imageUrl = item.imageUrl,
+                    title = item.itemName,
+                    subTitle = channelItem.title,
+                    itemInfo = item.itemInfo,
+                    playerInfo = "$dateStr．$durationStr",
+                    isPlaying = false,
+                    progress = 0.2F
+                )
+                Spacer(modifier = Modifier.fillMaxWidth().preferredHeight(Dimens.m3))
+            }
+        }
     }
 }
 
 @Composable
 fun ChannelPage(channelItem: ChannelItem) {
-    val scrollState: ScrollState = rememberScrollState()
     val expandedState = remember { mutableStateOf(false) }
-    val topSectionMaxHeightState = remember { mutableStateOf(0.dp) }
-    val topSectionCollapseFactorState = remember { mutableStateOf(0F) }
+    val lazyListState: LazyListState = rememberLazyListState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         EpisodeListSection(
             channelItem = channelItem,
-            scrollState = scrollState,
-            topSectionHeightState = topSectionMaxHeightState
+            expandedState = expandedState,
+            lazyListState = lazyListState,
         )
 
-        CollapsingTopSection(
-            scrollState = scrollState,
-            modifier = Modifier.fillMaxWidth(),
-            topMaxHeightState = topSectionMaxHeightState,
-            topSectionCollapseFactor = topSectionCollapseFactorState,
-            topBarSectionSlot = {
-                ExpandedTopToolbar(modifier = Modifier.fillMaxWidth(), channelItem = channelItem)
-            },
-            centerSectionSlot = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    FollowSection(
-                        isFollowed = channelItem.isFollowed,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                    )
-                    ExpandableText(
-                        text = channelItem.description,
-                        maxLines = 2,
-                        expandedState = expandedState,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                            .padding(top = Dimens.m3)
-                    )
-                    CategoryList(
-                        items = channelItem.categoryList,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = Dimens.m4)
-                    )
-                }
-            },
-            stickySectionSlot = {
-                AllEpisodeSection(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = Dimens.m4)
-                        .background(Colors.black)
-                )
-            }
+        val alpha = if(lazyListState.firstVisibleItemIndex >= categoryItemIndex) 1F else 0F
+        AllEpisodeSection(
+            modifier = Modifier.fillMaxWidth().padding(top = Dimens.toolBarHeight).height(allEpisodeTitleSectionHeight).alpha(alpha)
+                .padding(horizontal = Dimens.m4)
+                .background(Colors.black)
         )
 
         CollapsedTopToolbar(
             modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight),
             channelTitle = channelItem.title,
-            collapseFactorState = topSectionCollapseFactorState
+            lazyListState = lazyListState
         )
     }
 }
 
 @Composable
 private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
-    LazyRowFor(items = items, modifier = modifier.fillMaxWidth()) { item ->
+    LazyRowFor(items = items,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(categorySectionHeight)
+    ) { item ->
         OutlinedButton(
             shape = RoundedCornerShape(50F),
             onClick = { /* todo: [Amy] click event */ },
