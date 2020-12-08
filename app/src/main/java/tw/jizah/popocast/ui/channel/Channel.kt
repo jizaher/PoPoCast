@@ -42,9 +42,9 @@ import java.util.concurrent.TimeUnit
 
 private val coverSectionHeight = Dimens.channelCoverSize + Dimens.m3 * 2
 private val followSectionHeight = 56.dp
-private val categorySectionHeight = 56.dp
+private val categorySectionHeight = Dimens.toolBarHeight
 private val allEpisodeTitleSectionHeight = 56.dp
-private val categoryItemIndex = 3
+private const val categoryItemIndex = 3
 
 @Composable
 private fun CollapsedTopToolbar(
