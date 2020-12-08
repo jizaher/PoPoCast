@@ -10,8 +10,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,9 +19,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.CategoryItem
@@ -65,7 +63,7 @@ private fun CollapsedTopToolbar(
             }
         ) {
             Icon(
-                asset = Icons.Filled.ArrowBack,
+                imageVector = Icons.Filled.ArrowBack,
                 tint = Colors.white
             )
         }
@@ -149,7 +147,7 @@ private fun FollowSection(isFollowed: Boolean, modifier: Modifier) {
             modifier = Modifier
         ) {
             Icon(
-                asset = Icons.Default.MoreVert,
+                imageVector = Icons.Default.MoreVert,
                 tint = Colors.gray400
             )
         }
@@ -252,19 +250,6 @@ private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
         Spacer(modifier = Modifier.preferredWidth(Dimens.m2))
     }
 }
-
-//@Preview
-//@Composable
-//fun ExpandingTextPreview() {
-//    ExpandableWidget(
-//        expandedContent = {
-//            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
-//        },
-//        collapsedContent = {
-//            Text(text = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction")
-//        }
-//    )
-//}
 
 @Preview
 @Composable

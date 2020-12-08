@@ -12,19 +12,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.drawWithCache
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.VerticalGradient
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tw.jizah.popocast.R
 import tw.jizah.popocast.extensions.resize
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.widget.EllipsisText
 
+@ExperimentalCoroutinesApi
 @Composable
 fun Player() {
     val viewModel: PlayerViewModel = viewModel(modelClass = PlayerViewModel::class.java)
@@ -57,7 +59,7 @@ fun Player() {
                         // TODO: Joseph add click event
                     }) {
                     Icon(
-                        asset = Icons.Filled.KeyboardArrowDown,
+                        imageVector = Icons.Filled.KeyboardArrowDown,
                         tint = playerIconColor
                     )
                 }
@@ -78,7 +80,7 @@ fun Player() {
                         // TODO: Joseph add click event
                     }) {
                     Icon(
-                        asset = Icons.Filled.MoreVert,
+                        imageVector = Icons.Filled.MoreVert,
                         tint = playerIconColor
                     )
                 }
@@ -188,9 +190,9 @@ fun Player() {
                         onClick = {
                             // TODO: Joseph add click event
                         },
-                        icon = {
+                        content = {
                             Icon(
-                                asset = imageResource(id = R.drawable.ic_back_15),
+                                bitmap = imageResource(id = R.drawable.ic_back_15),
                                 modifier = Modifier.preferredSize(Dimens.m8),
                                 tint = playerIconColor
                             )
@@ -200,11 +202,11 @@ fun Player() {
                         onClick = {
                             viewModel.togglePlayOrPause()
                         },
-                        icon = {
+                        content = {
                             val icon =
                                 if (isPlayingState) Icons.Filled.PauseCircleFilled else Icons.Filled.PlayCircleFilled
                             Icon(
-                                asset = icon.resize(Dimens.m12),
+                                imageVector = icon.resize(Dimens.m12),
                                 tint = playerIconColor
                             )
                         })
@@ -213,9 +215,9 @@ fun Player() {
                         onClick = {
                             // TODO: Joseph add click event
                         },
-                        icon = {
+                        content = {
                             Icon(
-                                asset = imageResource(id = R.drawable.ic_skip_15),
+                                bitmap = imageResource(id = R.drawable.ic_skip_15),
                                 modifier = Modifier.preferredSize(Dimens.m8),
                                 tint = playerIconColor
                             )
@@ -225,9 +227,9 @@ fun Player() {
                         onClick = {
                             // TODO: Joseph add click event
                         },
-                        icon = {
+                        content = {
                             Icon(
-                                asset = Icons.Filled.Share.resize(Dimens.m6),
+                                imageVector = Icons.Filled.Share.resize(Dimens.m6),
                                 tint = playerIconColor
                             )
                         })

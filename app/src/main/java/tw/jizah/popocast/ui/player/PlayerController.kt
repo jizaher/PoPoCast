@@ -1,7 +1,5 @@
 package tw.jizah.popocast.ui.player
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -68,7 +66,7 @@ fun PlayerController() {
                     ) {
                         val icon =
                             if (isPlayingState) Icons.Filled.Pause else Icons.Filled.PlayArrow
-                        Icon(asset = icon, tint = Colors.white)
+                        Icon(imageVector = icon, tint = Colors.white)
                     }
                 }
             }
