@@ -42,9 +42,9 @@ fun ExpandableWidget(
 @Composable
 fun ExpandableText(
     text: String,
+    modifier: Modifier = Modifier,
     maxLines: Int = Integer.MAX_VALUE,
     expandedState: MutableState<Boolean>,
-    modifier: Modifier = Modifier
 ) {
     fun toggleDescription() {
         expandedState.value = !expandedState.value
