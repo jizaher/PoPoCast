@@ -44,7 +44,7 @@ private val coverSectionHeight = Dimens.channelCoverSize + Dimens.m3 * 2
 private val followSectionHeight = 56.dp
 private val categorySectionHeight = Dimens.toolBarHeight
 private val allEpisodeTitleSectionHeight = 56.dp
-private const val categoryItemIndex = 3
+const val categoryItemIndex = 3
 
 @Composable
 private fun CollapsedTopToolbar(
@@ -193,6 +193,7 @@ private fun EpisodeListSection(
 
         item {
             AllEpisodeSection(
+                lazyListState = lazyListState,
                 modifier = Modifier.fillMaxWidth().height(allEpisodeTitleSectionHeight)
                     .background(Colors.black)
             )
@@ -230,11 +231,11 @@ fun ChannelPage(channelItem: ChannelItem) {
             lazyListState = lazyListState,
         )
 
-        val alpha = if(lazyListState.firstVisibleItemIndex >= categoryItemIndex) 1F else 0F
         AllEpisodeSection(
-            modifier = Modifier.fillMaxWidth().padding(top = Dimens.toolBarHeight).height(allEpisodeTitleSectionHeight).alpha(alpha)
+            lazyListState = lazyListState,
+            useLazyState = true,
+            modifier = Modifier.fillMaxWidth().padding(top = Dimens.toolBarHeight).height(allEpisodeTitleSectionHeight)
                 .padding(horizontal = Dimens.m4)
-                .background(Colors.black)
         )
 
         CollapsedTopToolbar(

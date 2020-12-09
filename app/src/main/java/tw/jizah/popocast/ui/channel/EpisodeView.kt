@@ -2,6 +2,7 @@ package tw.jizah.popocast.ui.channel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.AmbientContext
@@ -29,17 +31,31 @@ import tw.jizah.popocast.utils.DateTimeUtils
 import tw.jizah.popocast.widget.EllipsisText
 
 @Composable
-fun AllEpisodeSection(modifier: Modifier = Modifier) {
-    Row(horizontalArrangement = Arrangement.SpaceBetween,
+fun AllEpisodeSection(
+    modifier: Modifier = Modifier,
+    useLazyState: Boolean = false,
+    lazyListState: LazyListState
+) {
+    val alpha = if (useLazyState) {
+        if (lazyListState.firstVisibleItemIndex >= categoryItemIndex) 1F else 0F
+    } else {
+        1F
+    }
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier)
+        modifier = modifier.alpha(alpha).background(Colors.black)
+    )
     {
-        EllipsisText(text = stringResource(id = R.string.all_episodes),
+        EllipsisText(
+            text = stringResource(id = R.string.all_episodes),
             style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.Bold,
-            color = Colors.white)
+            color = Colors.white
+        )
 
-        Button(onClick = { /* todo: [Amy] click event */ },
+        Button(
+            onClick = { /* todo: [Amy] click event */ },
             colors = ButtonConstants.defaultButtonColors(
                 backgroundColor = Colors.gray800
             ),
@@ -92,119 +108,95 @@ fun EpisodeItemView(
         shape = RoundedCornerShape(Dimens.m2),
         backgroundColor = Colors.gray800
     ) {
-        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-            val (coverId, titleId, subtitleId, moreIconId,
-                channelInfoId, playerIconId, itemInfoId, progressBarId) = createRefs()
-
-            CoilImage(
-                data = imageUrl,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(Dimens.episodeListCoverSize)
-                    .clip(MaterialTheme.shapes.medium)
-                    .constrainAs(coverId) {
-                        start.linkTo(parent.start, Dimens.m4)
-                        top.linkTo(parent.top, Dimens.m4)
-                    }
-            )
-
-            EllipsisText(text = title,
-                textAlign = TextAlign.Left,
-                maxLines = 2,
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
-                color = Colors.white,
-                modifier = Modifier.constrainAs(titleId) {
-                    start.linkTo(coverId.end, Dimens.m4)
-                    end.linkTo(moreIconId.start, Dimens.m1)
-                    top.linkTo(coverId.top)
-                    width = Dimension.fillToConstraints
-                }
-            )
-
-            EllipsisText(text = subTitle,
-                style = MaterialTheme.typography.subtitle2,
-                color = Colors.gray400,
-                modifier = Modifier.constrainAs(subtitleId) {
-                    start.linkTo(titleId.start)
-                    end.linkTo(titleId.end)
-                    top.linkTo(titleId.bottom, Dimens.m1)
-                    width = Dimension.fillToConstraints
-                }
-            )
-
-            IconButton(
-                onClick = { /* todo: [Amy] click event */ },
-                modifier = Modifier.constrainAs(moreIconId) {
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                },
-                content = {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        tint = Colors.gray400
-                    )
-                },
-            )
-
-            EllipsisText(text = itemInfo,
-                maxLines = 2,
-                style = MaterialTheme.typography.subtitle2,
-                color = Colors.gray400,
-                modifier = Modifier.constrainAs(channelInfoId) {
-                    start.linkTo(coverId.start)
-                    top.linkTo(coverId.bottom, Dimens.m2)
-                    end.linkTo(moreIconId.end)
-                    width = Dimension.fillToConstraints
-                }
-            )
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .preferredSize(Dimens.m9)
-                    .clip(CircleShape)
-                    .background(Colors.white)
-                    .constrainAs(playerIconId) {
-                        start.linkTo(coverId.start)
-                        top.linkTo(channelInfoId.bottom, Dimens.m1)
-                        bottom.linkTo(parent.bottom, Dimens.m4)
-                    }
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(start = Dimens.m4)
             ) {
+                CoilImage(
+                    data = imageUrl,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.padding(top = Dimens.m4)
+                        .size(Dimens.episodeListCoverSize)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                Column(modifier = Modifier.weight(1F).padding(start = Dimens.m2, end = Dimens.m2, top = Dimens.m4)) {
+                    EllipsisText(
+                        text = title,
+                        textAlign = TextAlign.Left,
+                        maxLines = 2,
+                        style = MaterialTheme.typography.subtitle1,
+                        fontWeight = FontWeight.Bold,
+                        color = Colors.white,
+                    )
+                    EllipsisText(
+                        text = subTitle,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = Colors.gray400,
+                        modifier = Modifier.padding(top = Dimens.m2)
+                    )
+                }
+
                 IconButton(
                     onClick = { /* todo: [Amy] click event */ },
-                ) {
-                    if (isPlaying) {
-                        Icon(Icons.Filled.Pause)
-                    } else {
-                        Icon(Icons.Filled.PlayArrow)
-                    }
-                }
+                    modifier = Modifier,
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            tint = Colors.gray400
+                        )
+                    },
+                )
             }
 
-            EllipsisText(text = playerInfo,
-                style = MaterialTheme.typography.overline,
+            EllipsisText(
+                text = itemInfo,
+                maxLines = 2,
+                style = MaterialTheme.typography.subtitle2,
                 color = Colors.gray400,
-                modifier = Modifier.constrainAs(itemInfoId) {
-                    start.linkTo(playerIconId.end, Dimens.m2)
-                    end.linkTo(moreIconId.end, Dimens.m1)
-                    top.linkTo(playerIconId.top)
-                    bottom.linkTo(playerIconId.bottom)
-                    width = Dimension.fillToConstraints
-                }
+                modifier = Modifier.fillMaxWidth().padding(start = Dimens.m4, end = Dimens.m4,  top = Dimens.m2)
             )
+
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = Dimens.m1, bottom = Dimens.m4, start = Dimens.m4, end = Dimens.m4),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .preferredSize(Dimens.m9)
+                        .clip(CircleShape)
+                        .background(Colors.white)
+                ) {
+                    IconButton(
+                        onClick = { /* todo: [Amy] click event */ },
+                    ) {
+                        if (isPlaying) {
+                            Icon(Icons.Filled.Pause)
+                        } else {
+                            Icon(Icons.Filled.PlayArrow)
+                        }
+                    }
+                }
+
+                EllipsisText(
+                    text = playerInfo,
+                    style = MaterialTheme.typography.overline,
+                    color = Colors.gray400,
+                    modifier = Modifier.padding(start = Dimens.m2).weight(1F)
+                )
+            }
 
             if (progress != 0F) {
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().constrainAs(progressBarId) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                    },
+                    modifier = Modifier.fillMaxWidth(),
                     progress = progress,
                     color = Colors.yellow
                 )
             }
-
         }
     }
 }
