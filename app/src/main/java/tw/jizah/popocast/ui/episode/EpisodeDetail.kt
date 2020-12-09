@@ -1,7 +1,7 @@
 package tw.jizah.popocast.ui.episode
 
 import androidx.compose.animation.animate
-import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -9,10 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.ArrowCircleDown
 import androidx.compose.runtime.*
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.viewinterop.viewModel
@@ -30,6 +32,8 @@ import tw.jizah.popocast.ui.player.PlayerViewModel
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.utils.quantityStringResource
+import tw.jizah.popocast.widget.CollapsingHeaderLayout
+import tw.jizah.popocast.widget.EllipsisText
 import tw.jizah.popocast.widget.ExpandableText
 import kotlin.time.ExperimentalTime
 import kotlin.time.milliseconds
@@ -50,11 +54,29 @@ fun EpisodeDetail(
     val expandedState: MutableState<Boolean> = remember { mutableStateOf(false) }
     val isItemAddedState: MutableState<Boolean> = remember { mutableStateOf(false) }
     val downloadState: MutableState<Int> = remember { mutableStateOf(0) }
+    val appBarHeight = with (AmbientDensity.current) {
+        Dimens.toolBarHeight.toIntPx()
+    }
 
     Surface(Modifier.fillMaxSize()) {
-        ScrollableColumn(modifier = Modifier.fillMaxSize()) {
-            EpisodeAppBar(Modifier.fillMaxWidth())
-            EpisodeHeader(channel = channel, episode = episode, playState = playState, modifier = Modifier.fillMaxWidth())
+        CollapsingHeaderLayout(
+            appBarHeight = appBarHeight,
+            topAppBar = { scrollState, headerHeightState ->
+            EpisodeAppBar(
+                title = episode.itemName,
+                appBarHeight = appBarHeight,
+                scrollState = scrollState,
+                headerHeightState = headerHeightState,
+                modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight)
+            )
+        }, header = {
+            EpisodeHeader(
+                channel = channel,
+                episode = episode,
+                playState = playState,
+                modifier = Modifier.padding(top = Dimens.toolBarHeight).fillMaxWidth()
+            )
+        }, body = {
             EpisodeButtonBar(
                 isPlaying = isPlayingState,
                 onClickPlay = viewModel::togglePlayOrPause,
@@ -62,37 +84,50 @@ fun EpisodeDetail(
                 downloadState = downloadState.value,
                 modifier = Modifier.fillMaxWidth()
             )
-            EpisodeBody(episode = episode, expandedState = expandedState, modifier = Modifier.fillMaxWidth())
+            EpisodeBody(
+                episode = episode,
+                expandedState = expandedState,
+                modifier = Modifier.fillMaxWidth()
+            )
             SeeAllEpisodes(modifier = Modifier.fillMaxWidth())
-        }
+        })
     }
 }
 
 @Composable
 private fun EpisodeAppBar(
+    title: String,
+    appBarHeight: Int,
+    scrollState: ScrollState,
+    headerHeightState: State<Int>,
     modifier: Modifier = Modifier
 ) {
-    ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
-        val (backButton, moreButton) = createRefs()
-        Icon(
-            imageVector = Icons.Filled.ArrowBack,
-            tint = iconTint,
-            modifier = Modifier.constrainAs(backButton) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-            },
-        )
-        Icon(
-            imageVector = Icons.Filled.MoreVert,
-            tint = iconTint,
-            modifier = Modifier.constrainAs(moreButton) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-            },
-        )
-    }
+    val collapseFraction = (scrollState.value / (headerHeightState.value - appBarHeight)).coerceIn(0F, 1F)
+    TopAppBar(
+        title = {
+            EllipsisText(
+                text = title,
+                color = Colors.white.copy(alpha = collapseFraction),
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                tint = iconTint,
+                modifier = Modifier.padding(start = Dimens.m1)
+            )
+        },
+        actions = {
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                tint = iconTint,
+                modifier = Modifier.padding(end = Dimens.m1)
+            )
+        },
+        backgroundColor = Colors.black.copy(alpha = collapseFraction),
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -198,7 +233,6 @@ private fun EpisodeButtonBar(
     downloadState: Int,
     onClickDownload: () -> Unit = {},
 ) {
-
     ConstraintLayout(modifier = modifier.padding(Dimens.m3)) {
         val (playBtn, shareBtn, addBtn, downloadBtn) = createRefs()
         PlayButton(

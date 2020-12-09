@@ -1,13 +1,18 @@
 package tw.jizah.popocast.widget
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import tw.jizah.popocast.ui.theme.Dimens
@@ -74,4 +79,42 @@ private fun calculateTopSectionCollapsedFactor(expandedSectionHeight: Float, scr
     }
 
     return alphaValue.coerceIn(0F, 1F)
+}
+
+@Composable
+fun CollapsingHeaderLayout(
+    appBarHeight: Int,
+    topAppBar: @Composable (ScrollState, State<Int>) -> Unit,
+    header: @Composable () -> Unit,
+    body: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+    val headerHeightState = remember { mutableStateOf(0) }
+    val totalHeightState = remember { mutableStateOf(0) }
+    val bodyHeightState = remember { mutableStateOf(0) }
+    val dummySpace = with (AmbientDensity.current) {
+        (totalHeightState.value - bodyHeightState.value - appBarHeight).toDp()
+    }
+    Column (
+        modifier = modifier.fillMaxSize().onSizeChanged { totalHeightState.value = it.height }
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            ScrollableColumn(
+                scrollState = scrollState,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(modifier = Modifier.onSizeChanged { headerHeightState.value = it.height }) {
+                    header()
+                }
+                Column(modifier = Modifier.onSizeChanged { bodyHeightState.value = it.height }) {
+                    body()
+                }
+                if (dummySpace > 0.dp) {
+                    Spacer(modifier = Modifier.fillMaxWidth().height(dummySpace))
+                }
+            }
+            topAppBar(scrollState, headerHeightState)
+        }
+    }
 }
