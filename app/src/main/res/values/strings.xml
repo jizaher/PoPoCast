@@ -10,6 +10,7 @@
     <string name="followed">Follow</string>
     <string name="not_yet_followed">Following</string>
     <string name="podcasts">Podcasts</string>
+    <string name="settings">Settings</string>
 
     <plurals name="time_unit_hour">
         <item quantity="one">%d HR</item>
