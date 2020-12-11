@@ -11,6 +11,7 @@
     <string name="see_less">顯示更少</string>
     <string name="sort">排序</string>
     <string name="podcasts">播客</string>
+    <string name="settings">設定</string>
 
     <plurals name="time_unit_hour">
         <item quantity="one">%d 時</item>
