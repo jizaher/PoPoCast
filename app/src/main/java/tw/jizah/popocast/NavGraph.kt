@@ -19,7 +19,7 @@ object MainDestinations {
     const val EPISODE_DETAIL_ROUTE = "episode_detail"
     const val SEARCH_ROUTE = "search"
     const val EPISODE_OPTIONS_ROUTE = "episode_options"
-    const val CHANNEL_ID_KEY = "channelId"
+    const val CHANNEL_ID_KEY = "channel_id"
     const val CHANNEL_ITEM_KEY = "key_channel_item"
     const val EPISODE_DETAIL_ID_KEY = "episode_id"
 }
