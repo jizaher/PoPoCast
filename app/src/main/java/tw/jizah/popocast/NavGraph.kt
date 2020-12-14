@@ -7,8 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import tw.jizah.popocast.MainDestinations.CHANNEL_ID_KEY
-import tw.jizah.popocast.MainDestinations.CHANNEL_ITEM_KEY
-import tw.jizah.popocast.MainDestinations.EPISODE_DETAIL_ID_KEY
+import tw.jizah.popocast.MainDestinations.EPISODE_ID_KEY
 import tw.jizah.popocast.ui.channel.ChannelPage
 import tw.jizah.popocast.ui.main.Discover
 import tw.jizah.popocast.ui.search.SearchPage
@@ -19,9 +18,9 @@ object MainDestinations {
     const val EPISODE_DETAIL_ROUTE = "episode_detail"
     const val SEARCH_ROUTE = "search"
     const val EPISODE_OPTIONS_ROUTE = "episode_options"
-    const val CHANNEL_ID_KEY = "channel_id"
-    const val CHANNEL_ITEM_KEY = "key_channel_item"
-    const val EPISODE_DETAIL_ID_KEY = "episode_id"
+
+    const val CHANNEL_ID_KEY = "key_channel_id"
+    const val EPISODE_ID_KEY = "key_episode_id"
 }
 
 @ExperimentalFocus
@@ -41,12 +40,10 @@ fun NavGraph(startDestination: String = MainDestinations.DISCOVERY_ROUTE) {
             )
         }
         composable(
-            route = "${MainDestinations.CHANNEL_ROUTE}/{$CHANNEL_ITEM_KEY}",
-            arguments = listOf(navArgument(CHANNEL_ITEM_KEY) {
-                type = NavType.LongType
-            })
+            route = "${MainDestinations.CHANNEL_ROUTE}/{$CHANNEL_ID_KEY}",
+            arguments = listOf(navArgument(CHANNEL_ID_KEY) { type = NavType.LongType })
         ) { backStackEntry ->
-            backStackEntry.arguments?.getLong(CHANNEL_ITEM_KEY)?.let { channelId ->
+            backStackEntry.arguments?.getLong(CHANNEL_ID_KEY)?.let { channelId ->
                 ChannelPage(
                     channelId = channelId,
                     options = actions.enterEpisodeOptionsPage,
@@ -55,19 +52,19 @@ fun NavGraph(startDestination: String = MainDestinations.DISCOVERY_ROUTE) {
             }
         }
         composable(
-            route = "${MainDestinations.EPISODE_DETAIL_ROUTE}/{$CHANNEL_ID_KEY}/{$EPISODE_DETAIL_ID_KEY}",
+            route = "${MainDestinations.EPISODE_DETAIL_ROUTE}/{$CHANNEL_ID_KEY}/{$EPISODE_ID_KEY}",
             arguments = listOf(
                 navArgument(CHANNEL_ID_KEY) { type = NavType.LongType },
-                navArgument(EPISODE_DETAIL_ID_KEY) { type = NavType.LongType })
+                navArgument(EPISODE_ID_KEY) { type = NavType.LongType })
         ) {
             // TODO : enter episode page
         }
         composable(route = MainDestinations.SEARCH_ROUTE) { SearchPage() }
         composable(
-            route = "${MainDestinations.EPISODE_OPTIONS_ROUTE}/{$CHANNEL_ID_KEY}/{$EPISODE_DETAIL_ID_KEY}",
+            route = "${MainDestinations.EPISODE_OPTIONS_ROUTE}/{$CHANNEL_ID_KEY}/{$EPISODE_ID_KEY}",
             arguments = listOf(
                 navArgument(CHANNEL_ID_KEY) { type = NavType.LongType },
-                navArgument(EPISODE_DETAIL_ID_KEY) { type = NavType.LongType })
+                navArgument(EPISODE_ID_KEY) { type = NavType.LongType })
         ) {
             // TODO : enter options page
         }
