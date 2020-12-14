@@ -62,9 +62,16 @@ object Libs {
         const val core = "androidx.core:core:1.5.0-alpha04"
         const val coreKtx = "androidx.core:core-ktx:1.5.0-alpha04"
 
+        object Navigation {
+            const val version = "2.2.2"
+            const val fragment = "androidx.navigation:navigation-fragment-ktx:$version"
+            const val ui = "androidx.navigation:navigation-ui-ktx:$version"
+        }
+
         object Compose {
             private const val snapshot = ""
             const val version = "1.0.0-alpha08"
+            const val navigation_version = "1.0.0-alpha03"
 
             @get:JvmStatic
             val snapshotUrl: String
@@ -79,6 +86,8 @@ object Libs {
             const val materialIconsExtended = "androidx.compose.material:material-icons-extended:${version}"
 
             const val tooling = "androidx.compose.ui:ui-tooling:${version}"
+
+            const val navigation = "androidx.navigation:navigation-compose:${navigation_version}"
         }
 
         object Test {
