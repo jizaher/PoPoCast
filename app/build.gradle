@@ -96,9 +96,6 @@ dependencies {
     implementation Libs.AndroidX.Compose.ui
     implementation Libs.AndroidX.Compose.navigation
 
-    implementation Libs.AndroidX.Navigation.fragment
-    implementation Libs.AndroidX.Navigation.ui
-
     implementation Libs.Accompanist.coil
 
     implementation Libs.Accompanist.insets
