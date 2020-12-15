@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +33,9 @@ import tw.jizah.popocast.ui.player.PlayerViewModel
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.utils.quantityStringResource
+import tw.jizah.popocast.utils.theme.DynamicThemePrimaryColorsFromImage
+import tw.jizah.popocast.utils.theme.rememberDominantColorState
+import tw.jizah.popocast.utils.verticalGradientScrim
 import tw.jizah.popocast.widget.CollapsingHeaderLayout
 import tw.jizah.popocast.widget.EllipsisText
 import tw.jizah.popocast.widget.ExpandableText
@@ -57,40 +61,56 @@ fun EpisodeDetail(
     val appBarHeight = with (AmbientDensity.current) {
         Dimens.toolBarHeight.toIntPx()
     }
+    val dominantColorState = rememberDominantColorState()
+    val channelImageUrl = channel.imageUrl
 
-    Surface(Modifier.fillMaxSize()) {
-        CollapsingHeaderLayout(
-            appBarHeight = appBarHeight,
-            topAppBar = { scrollState, headerHeightState ->
-            EpisodeAppBar(
-                title = episode.itemName,
+    DynamicThemePrimaryColorsFromImage(
+        dominantColorState = dominantColorState
+    ) {
+        if (channelImageUrl.isNotBlank()) {
+            LaunchedEffect(channelImageUrl) {
+                dominantColorState.updateColorsFromImageUrl(channelImageUrl)
+            }
+        }
+
+        Surface(Modifier.fillMaxSize()) {
+            CollapsingHeaderLayout(
                 appBarHeight = appBarHeight,
-                scrollState = scrollState,
-                headerHeightState = headerHeightState,
-                modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight)
-            )
-        }, header = {
-            EpisodeHeader(
-                channel = channel,
-                episode = episode,
-                playState = playState,
-                modifier = Modifier.padding(top = Dimens.toolBarHeight).fillMaxWidth()
-            )
-        }, body = {
-            EpisodeButtonBar(
-                isPlaying = isPlayingState,
-                onClickPlay = viewModel::togglePlayOrPause,
-                isItemAdded = isItemAddedState.value,
-                downloadState = downloadState.value,
-                modifier = Modifier.fillMaxWidth()
-            )
-            EpisodeBody(
-                episode = episode,
-                expandedState = expandedState,
-                modifier = Modifier.fillMaxWidth()
-            )
-            SeeAllEpisodes(modifier = Modifier.fillMaxWidth())
-        })
+                topAppBar = { scrollState, headerHeightState ->
+                    EpisodeAppBar(
+                        title = episode.itemName,
+                        appBarHeight = appBarHeight,
+                        scrollState = scrollState,
+                        headerHeightState = headerHeightState,
+                        modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight)
+                    )
+                }, header = {
+                    EpisodeHeader(
+                        channel = channel,
+                        episode = episode,
+                        playState = playState,
+                        modifier = Modifier.fillMaxWidth()
+                            .verticalGradientScrim(
+                                color = MaterialTheme.colors.primary.copy(alpha = 0.8f)
+                            )
+                            .padding(top = Dimens.toolBarHeight)
+                    )
+                }, body = {
+                    EpisodeButtonBar(
+                        isPlaying = isPlayingState,
+                        onClickPlay = viewModel::togglePlayOrPause,
+                        isItemAdded = isItemAddedState.value,
+                        downloadState = downloadState.value,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    EpisodeBody(
+                        episode = episode,
+                        expandedState = expandedState,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    SeeAllEpisodes(modifier = Modifier.fillMaxWidth())
+                })
+        }
     }
 }
 
@@ -126,6 +146,7 @@ private fun EpisodeAppBar(
             )
         },
         backgroundColor = Colors.black.copy(alpha = collapseFraction),
+        elevation = 0.dp,
         modifier = modifier
     )
 }
