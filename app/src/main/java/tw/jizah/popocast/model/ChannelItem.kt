@@ -1,6 +1,7 @@
 package tw.jizah.popocast.model
 
 data class ChannelItem(
+    val id: Long,
     val imageUrl: String,
     val title: String,
     val subtitle: String,

@@ -16,18 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.EpisodeItem
-import tw.jizah.popocast.ui.episode.formatDuration
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
-import tw.jizah.popocast.utils.DateTimeUtils
 import tw.jizah.popocast.widget.EllipsisText
 
 @Composable
@@ -67,41 +63,14 @@ fun AllEpisodeSection(
 }
 
 @Composable
-fun EpisodeItemList(
-    channelName: String,
-    episodeItemList: List<EpisodeItem>,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier.fillMaxWidth()) {
-        episodeItemList.forEach { item ->
-            val dateStr = DateTimeUtils.getDateString(AmbientContext.current, item.releaseTime)
-            val durationStr = formatDuration(item.duration)
-
-            EpisodeItemView(
-                modifier = Modifier.fillMaxWidth(),
-                imageUrl = item.imageUrl,
-                title = item.itemName,
-                subTitle = channelName,
-                itemInfo = item.itemInfo,
-                playerInfo = "$dateStr．$durationStr",
-                isPlaying = false,
-                progress = 0.2F
-            )
-            Spacer(modifier = Modifier.preferredHeight(Dimens.m2))
-        }
-    }
-}
-
-@Composable
 fun EpisodeItemView(
-    imageUrl: String,
-    title: String,
-    subTitle: String,
-    itemInfo: String,
+    channelId: Long,
+    episode: EpisodeItem,
     playerInfo: String,
     isPlaying: Boolean,
     progress: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    options: (Long, Long) -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -116,7 +85,7 @@ fun EpisodeItemView(
                 modifier = Modifier.padding(start = Dimens.m4)
             ) {
                 CoilImage(
-                    data = imageUrl,
+                    data = episode.imageUrl,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.padding(top = Dimens.m4)
                         .size(Dimens.episodeListCoverSize)
@@ -124,7 +93,7 @@ fun EpisodeItemView(
                 )
                 Column(modifier = Modifier.weight(1F).padding(start = Dimens.m2, end = Dimens.m2, top = Dimens.m4)) {
                     EllipsisText(
-                        text = title,
+                        text = episode.itemName,
                         textAlign = TextAlign.Left,
                         maxLines = 2,
                         style = MaterialTheme.typography.subtitle1,
@@ -132,7 +101,7 @@ fun EpisodeItemView(
                         color = Colors.white,
                     )
                     EllipsisText(
-                        text = subTitle,
+                        text = episode.itemInfo,
                         style = MaterialTheme.typography.subtitle2,
                         color = Colors.gray400,
                         modifier = Modifier.padding(top = Dimens.m2)
@@ -140,7 +109,7 @@ fun EpisodeItemView(
                 }
 
                 IconButton(
-                    onClick = { /* todo: [Amy] click event */ },
+                    onClick = { options(channelId, episode.id) },
                     modifier = Modifier,
                     content = {
                         Icon(
@@ -152,7 +121,7 @@ fun EpisodeItemView(
             }
 
             EllipsisText(
-                text = itemInfo,
+                text = episode.description,
                 maxLines = 2,
                 style = MaterialTheme.typography.subtitle2,
                 color = Colors.gray400,
@@ -199,35 +168,4 @@ fun EpisodeItemView(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun previewItemList() {
-    EpisodeItemList(channelName = "channel title",
-        episodeItemList = (0..10).map { index ->
-            EpisodeItem(
-                imageUrl = "https://picsum.photos/300/300",
-                itemName = "This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index This is item title $index",
-                itemInfo = "This is item info This is item info This is item info This is item info This is item info This is item info",
-                releaseTime = System.currentTimeMillis(),
-                duration = 200000L,
-                description = ""
-            )
-        }
-    )
-}
-
-@Preview
-@Composable
-fun previewItem() {
-    EpisodeItemView(
-        imageUrl = "https://picsum.photos/300/300",
-        title = "This is channel Title2 This is channel Title2 This is channel Title2 This is channel Title2",
-        subTitle = "This is channel subTitle",
-        itemInfo = "This is channel info",
-        playerInfo = "Item info",
-        isPlaying = false,
-        progress = 0.5F
-    )
 }

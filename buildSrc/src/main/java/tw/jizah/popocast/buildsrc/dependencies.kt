@@ -65,6 +65,7 @@ object Libs {
         object Compose {
             private const val snapshot = ""
             const val version = "1.0.0-alpha08"
+            const val navigation_version = "1.0.0-alpha03"
 
             @get:JvmStatic
             val snapshotUrl: String
@@ -79,6 +80,8 @@ object Libs {
             const val materialIconsExtended = "androidx.compose.material:material-icons-extended:${version}"
 
             const val tooling = "androidx.compose.ui:ui-tooling:${version}"
+
+            const val navigation = "androidx.navigation:navigation-compose:${navigation_version}"
         }
 
         object Test {

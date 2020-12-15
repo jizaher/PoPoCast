@@ -25,20 +25,17 @@ import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
 import tw.jizah.popocast.model.CategoryItem
 import tw.jizah.popocast.model.ChannelItem
-import tw.jizah.popocast.model.EpisodeItem
 import tw.jizah.popocast.ui.episode.formatDuration
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
 import tw.jizah.popocast.utils.DateTimeUtils
 import tw.jizah.popocast.widget.*
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 private val coverSectionHeight = Dimens.channelCoverSize + Dimens.m3 * 2
 private val followSectionHeight = 56.dp
@@ -47,13 +44,51 @@ private val allEpisodeTitleSectionHeight = 56.dp
 const val categoryItemIndex = 3
 
 @Composable
+fun ChannelPage(
+    channelId: Long,
+    options: (Long, Long) -> Unit,
+    back: () -> Unit
+) {
+    val viewModel = viewModel(modelClass = ChannelViewModel::class.java)
+    val channelItem = viewModel.getChannel(channelId = channelId)
+    val expandedState = remember { mutableStateOf(false) }
+    val lazyListState = rememberLazyListState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        EpisodeListSection(
+            channelItem = channelItem,
+            expandedState = expandedState,
+            lazyListState = lazyListState,
+            options = options
+        )
+
+        AllEpisodeSection(
+            lazyListState = lazyListState,
+            useLazyState = true,
+            modifier = Modifier.fillMaxWidth().padding(top = Dimens.toolBarHeight)
+                .height(allEpisodeTitleSectionHeight)
+                .padding(horizontal = Dimens.m4)
+        )
+
+        CollapsedTopToolbar(
+            modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight),
+            channelTitle = channelItem.title,
+            lazyListState = lazyListState,
+            back = back
+        )
+    }
+}
+
+@Composable
 private fun CollapsedTopToolbar(
     modifier: Modifier,
     channelTitle: String,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    back: () -> Unit
 ) {
     val alpha = if (lazyListState.firstVisibleItemIndex == 0) {
-        val offsetDp = with(AmbientDensity.current){ lazyListState.firstVisibleItemScrollOffset.toDp() }
+        val offsetDp =
+            with(AmbientDensity.current) { lazyListState.firstVisibleItemScrollOffset.toDp() }
         (offsetDp / coverSectionHeight).coerceIn(0F, 1F)
     } else {
         1F
@@ -73,7 +108,7 @@ private fun CollapsedTopToolbar(
     }
 
     IconButton(
-        onClick = {/* todo: [Amy] click event */ },
+        onClick = { back() },
         modifier = Modifier.height(Dimens.toolBarHeight)
     ) {
         Icon(
@@ -157,6 +192,7 @@ private fun EpisodeListSection(
     channelItem: ChannelItem,
     lazyListState: LazyListState,
     expandedState: MutableState<Boolean>,
+    options: (Long, Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().background(Colors.black).padding(horizontal = Dimens.m4),
@@ -178,10 +214,12 @@ private fun EpisodeListSection(
             )
         }
         item {
-            ExpandableText(text = channelItem.description, maxLines = 2, expandedState = expandedState,
+            ExpandableText(
+                text = channelItem.description, maxLines = 2, expandedState = expandedState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = Dimens.m1))
+                    .padding(vertical = Dimens.m1)
+            )
         }
 
         item {
@@ -204,14 +242,13 @@ private fun EpisodeListSection(
             val durationStr = formatDuration(item.duration)
             Column {
                 EpisodeItemView(
+                    channelId = channelItem.id,
                     modifier = Modifier.fillMaxWidth(),
-                    imageUrl = item.imageUrl,
-                    title = item.itemName,
-                    subTitle = channelItem.title,
-                    itemInfo = item.itemInfo,
+                    episode = item,
                     playerInfo = "$dateStr．$durationStr",
                     isPlaying = false,
-                    progress = 0.2F
+                    progress = 0.2F,
+                    options = options
                 )
                 Spacer(modifier = Modifier.fillMaxWidth().preferredHeight(Dimens.m3))
             }
@@ -220,35 +257,9 @@ private fun EpisodeListSection(
 }
 
 @Composable
-fun ChannelPage(channelItem: ChannelItem) {
-    val expandedState = remember { mutableStateOf(false) }
-    val lazyListState: LazyListState = rememberLazyListState()
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        EpisodeListSection(
-            channelItem = channelItem,
-            expandedState = expandedState,
-            lazyListState = lazyListState,
-        )
-
-        AllEpisodeSection(
-            lazyListState = lazyListState,
-            useLazyState = true,
-            modifier = Modifier.fillMaxWidth().padding(top = Dimens.toolBarHeight).height(allEpisodeTitleSectionHeight)
-                .padding(horizontal = Dimens.m4)
-        )
-
-        CollapsedTopToolbar(
-            modifier = Modifier.fillMaxWidth().height(Dimens.toolBarHeight),
-            channelTitle = channelItem.title,
-            lazyListState = lazyListState
-        )
-    }
-}
-
-@Composable
 private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
-    LazyRowFor(items = items,
+    LazyRowFor(
+        items = items,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
@@ -268,33 +279,4 @@ private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
 
         Spacer(modifier = Modifier.preferredWidth(Dimens.m2))
     }
-}
-
-@Preview
-@Composable
-fun ChannelPagePreview() {
-    ChannelPage(
-        ChannelItem(
-            imageUrl = "https://picsum.photos/300/300",
-            title = "Channel title",
-            subtitle = "Author",
-            description = "This is introduction. This is introduction. This is introduction.\nThis is introduction\nThis is introduction\nThis is introduction",
-            isFollowed = true,
-            isExpanded = true,
-            categoryList = listOf(CategoryItem("Comedy", ""), CategoryItem("Knowledge", "")),
-            episodeList = (0..10).map { index ->
-                EpisodeItem(
-                    imageUrl = "https://picsum.photos/300/300",
-                    itemName = "This is item title $index",
-                    itemInfo = "This is item info",
-                    releaseTime = Calendar.getInstance().timeInMillis - TimeUnit.MILLISECONDS.convert(
-                        (index + 1).toLong(),
-                        TimeUnit.DAYS
-                    ),
-                    duration = 0L,
-                    description = ""
-                )
-            }
-        )
-    )
 }
