@@ -93,7 +93,7 @@ fun EpisodeItemView(
                 )
                 Column(modifier = Modifier.weight(1F).padding(start = Dimens.m2, end = Dimens.m2, top = Dimens.m4)) {
                     EllipsisText(
-                        text = episode.title,
+                        text = episode.itemName,
                         textAlign = TextAlign.Left,
                         maxLines = 2,
                         style = MaterialTheme.typography.subtitle1,
@@ -101,7 +101,7 @@ fun EpisodeItemView(
                         color = Colors.white,
                     )
                     EllipsisText(
-                        text = episode.subtitle,
+                        text = episode.itemInfo,
                         style = MaterialTheme.typography.subtitle2,
                         color = Colors.gray400,
                         modifier = Modifier.padding(top = Dimens.m2)

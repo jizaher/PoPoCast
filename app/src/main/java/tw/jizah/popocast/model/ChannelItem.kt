@@ -7,6 +7,7 @@ data class ChannelItem(
     val subtitle: String,
     val description: String,
     val isFollowed: Boolean,
+    val isExpanded: Boolean,
     val episodeList: List<EpisodeItem>,
-    val tagList: List<TagInfo>
+    val categoryList: List<CategoryItem>
 )

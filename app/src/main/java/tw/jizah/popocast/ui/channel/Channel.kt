@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
 import dev.chrisbanes.accompanist.coil.CoilImage
 import tw.jizah.popocast.R
+import tw.jizah.popocast.model.CategoryItem
 import tw.jizah.popocast.model.ChannelItem
-import tw.jizah.popocast.model.TagInfo
 import tw.jizah.popocast.ui.episode.formatDuration
 import tw.jizah.popocast.ui.theme.Colors
 import tw.jizah.popocast.ui.theme.Dimens
@@ -224,7 +224,7 @@ private fun EpisodeListSection(
 
         item {
             CategoryList(
-                items = channelItem.tagList,
+                items = channelItem.categoryList,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -257,7 +257,7 @@ private fun EpisodeListSection(
 }
 
 @Composable
-private fun CategoryList(modifier: Modifier, items: List<TagInfo>) {
+private fun CategoryList(modifier: Modifier, items: List<CategoryItem>) {
     LazyRowFor(
         items = items,
         verticalAlignment = Alignment.CenterVertically,
