@@ -28,7 +28,7 @@ abstract class PoPoCastDataBase : RoomDatabase() {
     abstract fun channelDao(): ChannelDao
     abstract fun episodeDao(): EpisodeDao
     abstract fun tagDao(): TagDao
-    abstract fun tapMapDao(): TagMapDao
+    abstract fun tagMapDao(): TagMapDao
 
     companion object {
         const val DB_VERSION = 1
