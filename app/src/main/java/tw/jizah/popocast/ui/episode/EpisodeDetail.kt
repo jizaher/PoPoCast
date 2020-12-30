@@ -78,7 +78,7 @@ fun EpisodeDetail(
                 appBarHeight = appBarHeight,
                 topAppBar = { scrollState, headerHeightState ->
                     EpisodeAppBar(
-                        title = episode.itemName,
+                        title = episode.title,
                         appBarHeight = appBarHeight,
                         scrollState = scrollState,
                         headerHeightState = headerHeightState,
@@ -168,7 +168,7 @@ private fun EpisodeHeader(
                 .clip(RoundedCornerShape(size = Dimens.m1))
         )
         Text(
-            text = episode.itemName,
+            text = episode.title,
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = Dimens.m6)
